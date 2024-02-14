@@ -19,7 +19,7 @@ import (
 
 	. "github.com/onsi/gomega"
 
-	vpp_acl "go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2210/acl"
+	vpp_acl "go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2306/acl"
 )
 
 // Test assignment of IP acl rule to given interface

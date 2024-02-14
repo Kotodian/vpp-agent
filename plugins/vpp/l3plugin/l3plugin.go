@@ -42,6 +42,7 @@ import (
 	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/l3plugin/vppcalls/vpp2202"
 	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/l3plugin/vppcalls/vpp2210"
 	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/l3plugin/vppcalls/vpp2306"
+	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/l3plugin/vppcalls/vpp2310"
 )
 
 func init() {

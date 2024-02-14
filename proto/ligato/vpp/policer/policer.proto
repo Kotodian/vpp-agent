@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package ligato.vpp.policer;
+
+option go_package = "go.ligato.io/vpp-agent/v3/proto/ligato/policer;vpp_policer";
+
+// QoS Rate Types
+enum Sse2QosRateType {
+    RATE_KBPS = 0;
+    RATE_PPS = 1;
+    RATE_INVALID = 2;
+}
+
+// QoS Rounding Types
+enum Sse2QosRoundType {
+    ROUND_TO_CLOSEST = 0;
+    ROUND_TO_UP = 1;
+    ROUND_TO_DOWN = 2;
+    ROUND_INVALID = 3;
+}
+
+// QoS Policer Types
+enum Sse2QosPolicerType {
+    POLICER_1R2C = 0;
+    POLICER_1R3C_RFC_2697 = 1;
+    POLICER_2R3C_RFC_2698 = 2;
+    POLICER_2R3C_RFC_4115 = 3;
+    POLICER_2R3C_RFC_MEF5CF1 = 4;
+    POLICER_MAX = 5;
+}
+
+// QoS Action Types
+enum Sse2QosActionType {
+  ACTION_DROP = 0;
+  ACTION_TRANSMIT = 1;
+  ACTION_MARK_AND_TRANSMIT = 2;
+}
+
+// QoS Action
+message Sse2QosAction {
+  Sse2QosActionType type = 1;
+  uint32 dscp = 2;
+}
+
+// Policer Configuration
+message PolicerConfig {
+  string name = 1;
+  uint32 cir = 2;                     // Committed Information Rate
+  uint32 eir = 3;                     // Excess Information Rate
+  uint64 cb = 4;                      // Committed Burst
+  uint64 eb = 5;                      // Excess or Peak Burst
+  Sse2QosRateType rateType = 6;
+  Sse2QosRoundType roundType = 7;
+  Sse2QosPolicerType type = 8;
+  bool colorAware = 9;
+  Sse2QosAction conformAction = 10;
+  Sse2QosAction exceedAction = 11;
+  Sse2QosAction violateAction = 12;
+}

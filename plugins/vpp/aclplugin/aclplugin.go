@@ -32,6 +32,7 @@ import (
 	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/aclplugin/vppcalls/vpp2202"
 	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/aclplugin/vppcalls/vpp2210"
 	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/aclplugin/vppcalls/vpp2306"
+	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/aclplugin/vppcalls/vpp2310"
 )
 
 // ACLPlugin is a plugin that manages ACLs.

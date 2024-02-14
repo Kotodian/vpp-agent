@@ -38,6 +38,7 @@ import (
 	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/puntplugin/vppcalls/vpp2202"
 	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/puntplugin/vppcalls/vpp2210"
 	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/puntplugin/vppcalls/vpp2306"
+	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/puntplugin/vppcalls/vpp2310"
 )
 
 // PuntPlugin configures VPP punt to host or unix domain socket entries and IP redirect entries using GoVPP.

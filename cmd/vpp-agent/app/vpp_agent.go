@@ -48,6 +48,7 @@ import (
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/l2plugin"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/l3plugin"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/natplugin"
+	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/puntplugin"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/srplugin"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/stnplugin"
@@ -175,36 +176,38 @@ func (a *VPPAgent) Close() error {
 
 // VPP contains all VPP plugins.
 type VPP struct {
-	ABFPlugin   *abfplugin.ABFPlugin
-	ACLPlugin   *aclplugin.ACLPlugin
-	DNSPlugin   *dnsplugin.DNSPlugin
-	IfPlugin    *ifplugin.IfPlugin
-	IPFIXPlugin *ipfixplugin.IPFIXPlugin
-	IPSecPlugin *ipsecplugin.IPSecPlugin
-	L2Plugin    *l2plugin.L2Plugin
-	L3Plugin    *l3plugin.L3Plugin
-	NATPlugin   *natplugin.NATPlugin
-	PuntPlugin  *puntplugin.PuntPlugin
-	STNPlugin   *stnplugin.STNPlugin
-	SRPlugin    *srplugin.SRPlugin
-	WgPlugin    *wireguardplugin.WgPlugin
+	ABFPlugin     *abfplugin.ABFPlugin
+	ACLPlugin     *aclplugin.ACLPlugin
+	DNSPlugin     *dnsplugin.DNSPlugin
+	IfPlugin      *ifplugin.IfPlugin
+	IPFIXPlugin   *ipfixplugin.IPFIXPlugin
+	IPSecPlugin   *ipsecplugin.IPSecPlugin
+	L2Plugin      *l2plugin.L2Plugin
+	L3Plugin      *l3plugin.L3Plugin
+	NATPlugin     *natplugin.NATPlugin
+	PuntPlugin    *puntplugin.PuntPlugin
+	STNPlugin     *stnplugin.STNPlugin
+	SRPlugin      *srplugin.SRPlugin
+	WgPlugin      *wireguardplugin.WgPlugin
+	PolicerPlugin *policerplugin.PolicerPlugin
 }
 
 func DefaultVPP() VPP {
 	return VPP{
-		ABFPlugin:   &abfplugin.DefaultPlugin,
-		ACLPlugin:   &aclplugin.DefaultPlugin,
-		DNSPlugin:   &dnsplugin.DefaultPlugin,
-		IfPlugin:    &ifplugin.DefaultPlugin,
-		IPFIXPlugin: &ipfixplugin.DefaultPlugin,
-		IPSecPlugin: &ipsecplugin.DefaultPlugin,
-		L2Plugin:    &l2plugin.DefaultPlugin,
-		L3Plugin:    &l3plugin.DefaultPlugin,
-		NATPlugin:   &natplugin.DefaultPlugin,
-		PuntPlugin:  &puntplugin.DefaultPlugin,
-		STNPlugin:   &stnplugin.DefaultPlugin,
-		SRPlugin:    &srplugin.DefaultPlugin,
-		WgPlugin:    &wireguardplugin.DefaultPlugin,
+		ABFPlugin:     &abfplugin.DefaultPlugin,
+		ACLPlugin:     &aclplugin.DefaultPlugin,
+		DNSPlugin:     &dnsplugin.DefaultPlugin,
+		IfPlugin:      &ifplugin.DefaultPlugin,
+		IPFIXPlugin:   &ipfixplugin.DefaultPlugin,
+		IPSecPlugin:   &ipsecplugin.DefaultPlugin,
+		L2Plugin:      &l2plugin.DefaultPlugin,
+		L3Plugin:      &l3plugin.DefaultPlugin,
+		NATPlugin:     &natplugin.DefaultPlugin,
+		PuntPlugin:    &puntplugin.DefaultPlugin,
+		STNPlugin:     &stnplugin.DefaultPlugin,
+		SRPlugin:      &srplugin.DefaultPlugin,
+		WgPlugin:      &wireguardplugin.DefaultPlugin,
+		PolicerPlugin: &policerplugin.DefaultPlugin,
 	}
 }
 
