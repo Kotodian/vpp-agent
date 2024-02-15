@@ -30,6 +30,7 @@ import (
 	l2 "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/l2"
 	l3 "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/l3"
 	nat "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/nat"
+	policer "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer"
 	punt "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/punt"
 	stn "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/stn"
 )
@@ -247,6 +248,13 @@ func (dsl *PutDSL) VRRP(val *l3.VRRPEntry) vppclient.PutDSL {
 	return dsl
 }
 
+// Policer adds a request to add an existing VPP policer.
+func (dsl *PutDSL) Policer(val *policer.PolicerConfig) vppclient.PutDSL {
+	key := policer.PolicerConfigKey(val.Name)
+	dsl.parent.txn.Put(key, val)
+	return dsl
+}
+
 // Delete changes the DSL mode to allow removal of an existing configuration.
 func (dsl *PutDSL) Delete() vppclient.DeleteDSL {
 	return &DeleteDSL{dsl.parent}
@@ -434,6 +442,13 @@ func (dsl Reply) ReceiveReply() error {
 // VRRP adds a request to delete an existing VPP L3 VRRP entry.
 func (dsl *DeleteDSL) VRRP(val *l3.VRRPEntry) vppclient.DeleteDSL {
 	key := l3.VrrpEntryKey(val.Interface, val.VrId)
+	dsl.parent.txn.Delete(key)
+	return dsl
+}
+
+// Policer adds a request to delete an existing VPP Policer.
+func (dsl *DeleteDSL) Policer(name string) vppclient.DeleteDSL {
+	key := policer.PolicerConfigKey(name)
 	dsl.parent.txn.Delete(key)
 	return dsl
 }

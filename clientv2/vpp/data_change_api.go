@@ -23,6 +23,7 @@ import (
 	l2 "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/l2"
 	l3 "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/l3"
 	nat "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/nat"
+	policer "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer"
 	punt "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/punt"
 	stn "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/stn"
 )
@@ -110,6 +111,8 @@ type PutDSL interface {
 	FlowprobeFeature(val *ipfix.FlowProbeFeature) PutDSL
 	// VRRP adds a request to create or update VPP L3 VRRP.
 	VRRP(val *l3.VRRPEntry) PutDSL
+	// Policer adds a request to create or update VPP Policer.
+	Policer(val *policer.PolicerConfig) PutDSL
 
 	// Delete changes the DSL mode to allow removal of an existing configuration.
 	// See documentation for DataChangeDSL.Delete().
@@ -175,6 +178,8 @@ type DeleteDSL interface {
 	FlowprobeFeature(val *ipfix.FlowProbeFeature) DeleteDSL
 	// VRRP adds a request to delete VPP L3 VRRP.
 	VRRP(val *l3.VRRPEntry) DeleteDSL
+	// Policer adds a request to delete VPP Policer.
+	Policer(name string) DeleteDSL
 
 	// Put changes the DSL mode to allow configuration editing.
 	// See documentation for DataChangeDSL.Put().

@@ -30,6 +30,7 @@ import (
 	l2 "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/l2"
 	l3 "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/l3"
 	nat "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/nat"
+	policer "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer"
 	punt "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/punt"
 	stn "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/stn"
 )
@@ -296,6 +297,15 @@ func (dsl *DataResyncDSL) FlowprobeFeature(val *ipfix.FlowProbeFeature) vppclien
 func (dsl *DataResyncDSL) VRRP(vrrp *l3.VRRPEntry) vppclient.DataResyncDSL {
 	key := l3.VrrpEntryKey(vrrp.Interface, vrrp.VrId)
 	dsl.txn.Put(key, vrrp)
+	dsl.txnKeys = append(dsl.txnKeys, key)
+
+	return dsl
+}
+
+// Polcier adds Policer to the RESYNC request.
+func (dsl *DataResyncDSL) Policer(p *policer.PolicerConfig) vppclient.DataResyncDSL {
+	key := policer.PolicerConfigKey(p.Name)
+	dsl.txn.Put(key, p)
 	dsl.txnKeys = append(dsl.txnKeys, key)
 
 	return dsl
