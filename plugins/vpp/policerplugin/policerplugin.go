@@ -1,4 +1,5 @@
 //go:generate descriptor-adapter --descriptor-name Policer --value-type *vpp_policer.PolicerConfig --meta-type *policeridx.PolicerMetadata --import "go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/policeridx" --import "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer" --output-dir "descriptor"
+//go:generate descriptor-adapter --descriptor-name PolicerInterface --value-type *vpp_policer.PolicerConfig_Interface --import "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer" --output-dir "descriptor"
 
 package policerplugin
 
@@ -9,8 +10,10 @@ import (
 	"go.ligato.io/vpp-agent/v3/plugins/govppmux"
 	kvs "go.ligato.io/vpp-agent/v3/plugins/kvscheduler/api"
 
+	"go.ligato.io/vpp-agent/v3/plugins/vpp/ifplugin"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/descriptor"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/descriptor/adapter"
+	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/policeridx"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/vppcalls"
 	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/vppcalls/vpp2310"
 )
@@ -22,13 +25,18 @@ type PolicerPlugin struct {
 	// handler
 	PolicerHandler vppcalls.PolicerVppAPI
 
-	policerDescriptor *descriptor.PolicerDescriptor
+	policerDescriptor   *descriptor.PolicerDescriptor
+	policerIfDescriptor *descriptor.PolicerInterfaceDescriptor
+
+	// runime
+	policerIndex policeridx.PolicerMetadataIndex
 }
 
 type Deps struct {
 	infra.PluginDeps
 	KVScheduler kvs.KVScheduler
 	VPP         govppmux.API
+	IfPlugin    ifplugin.API
 }
 
 func (p *PolicerPlugin) Init() (err error) {
@@ -45,7 +53,24 @@ func (p *PolicerPlugin) Init() (err error) {
 		return err
 	}
 
+	metadataMap := p.KVScheduler.GetMetadataMap(p.policerDescriptor.GetDescriptor().Name)
+
+	var withIndex bool
+	p.policerIndex, withIndex = metadataMap.(policeridx.PolicerMetadataIndex)
+	if !withIndex {
+		return errors.New("missing index with policer metadata")
+	}
+	p.policerIfDescriptor = descriptor.NewPolicerInterfaceDescriptor(p.IfPlugin.GetInterfaceIndex(), p.GetPolicerIndex(), p.PolicerHandler, p.Log)
+	policerIfDescriptor := adapter.NewPolicerInterfaceDescriptor(p.policerIfDescriptor.GetDescriptor())
+	err = p.KVScheduler.RegisterKVDescriptor(policerIfDescriptor)
+	if err != nil {
+		return err
+	}
 	return nil
+}
+
+func (p *PolicerPlugin) GetPolicerIndex() policeridx.PolicerMetadataIndex {
+	return p.policerIndex
 }
 
 // AfterInit

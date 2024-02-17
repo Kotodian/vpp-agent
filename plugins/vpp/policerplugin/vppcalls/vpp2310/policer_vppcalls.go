@@ -3,6 +3,7 @@ package vpp2310
 import (
 	"fmt"
 
+	"go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2310/interface_types"
 	vpp_policer "go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2310/policer"
 	vpp_policer_types "go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2310/policer_types"
 	policer "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer"
@@ -76,8 +77,8 @@ func (h *PolicerVppHandler) AddPolicer(cfg *policer.PolicerConfig) (uint32, erro
 	return reply.PolicerIndex, nil
 }
 
-func (h *PolicerVppHandler) UpdatePolicer(policer_index uint32, cfg *policer.PolicerConfig) error {
-	policer_vpp := vpp_policer_types.PolicerConfig{
+func (h *PolicerVppHandler) UpdatePolicer(policerIndex uint32, cfg *policer.PolicerConfig) error {
+	policerVpp := vpp_policer_types.PolicerConfig{
 		Cir:        cfg.Cir,
 		Eir:        cfg.Eir,
 		Cb:         cfg.Cb,
@@ -89,44 +90,44 @@ func (h *PolicerVppHandler) UpdatePolicer(policer_index uint32, cfg *policer.Pol
 	}
 
 	if cfg.ConformAction == nil {
-		policer_vpp.ConformAction = vpp_policer_types.Sse2QosAction{
+		policerVpp.ConformAction = vpp_policer_types.Sse2QosAction{
 			Type: vpp_policer_types.SSE2_QOS_ACTION_API_DROP,
 			Dscp: 0,
 		}
 	} else {
-		policer_vpp.ConformAction = vpp_policer_types.Sse2QosAction{
+		policerVpp.ConformAction = vpp_policer_types.Sse2QosAction{
 			Type: vpp_policer_types.Sse2QosActionType(cfg.ConformAction.Type),
 			Dscp: uint8(cfg.ConformAction.Dscp),
 		}
 	}
 
 	if cfg.ExceedAction == nil {
-		policer_vpp.ExceedAction = vpp_policer_types.Sse2QosAction{
+		policerVpp.ExceedAction = vpp_policer_types.Sse2QosAction{
 			Type: vpp_policer_types.SSE2_QOS_ACTION_API_DROP,
 			Dscp: 0,
 		}
 	} else {
-		policer_vpp.ExceedAction = vpp_policer_types.Sse2QosAction{
+		policerVpp.ExceedAction = vpp_policer_types.Sse2QosAction{
 			Type: vpp_policer_types.Sse2QosActionType(cfg.ExceedAction.Type),
 			Dscp: uint8(cfg.ExceedAction.Dscp),
 		}
 	}
 
 	if cfg.ViolateAction == nil {
-		policer_vpp.ViolateAction = vpp_policer_types.Sse2QosAction{
+		policerVpp.ViolateAction = vpp_policer_types.Sse2QosAction{
 			Type: vpp_policer_types.SSE2_QOS_ACTION_API_DROP,
 			Dscp: 0,
 		}
 	} else {
-		policer_vpp.ViolateAction = vpp_policer_types.Sse2QosAction{
+		policerVpp.ViolateAction = vpp_policer_types.Sse2QosAction{
 			Type: vpp_policer_types.Sse2QosActionType(cfg.ViolateAction.Type),
 			Dscp: uint8(cfg.ViolateAction.Dscp),
 		}
 	}
 
 	request := &vpp_policer.PolicerUpdate{
-		PolicerIndex: policer_index,
-		Infos:        policer_vpp,
+		PolicerIndex: policerIndex,
+		Infos:        policerVpp,
 	}
 	// prepare reply
 	reply := &vpp_policer.PolicerUpdateReply{}
@@ -138,14 +139,59 @@ func (h *PolicerVppHandler) UpdatePolicer(policer_index uint32, cfg *policer.Pol
 	return nil
 }
 
-func (h *PolicerVppHandler) DelPolicer(policer_idx uint32) error {
+func (h *PolicerVppHandler) DelPolicer(policerIndex uint32) error {
 	// prepare request
 	request := &vpp_policer.PolicerDel{
-		PolicerIndex: policer_idx,
+		PolicerIndex: policerIndex,
 	}
 	// prepare reply
 	reply := &vpp_policer.PolicerDelReply{}
 
+	// send request and obtain reply
+	if err := h.callsChannel.SendRequest(request).ReceiveReply(reply); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (h *PolicerVppHandler) ResetPolicer(policerIndex uint32) error {
+	// prepare request
+	request := &vpp_policer.PolicerReset{
+		PolicerIndex: policerIndex,
+	}
+	// prepare reply
+	reply := &vpp_policer.PolicerResetReply{}
+
+	// send request and obtain reply
+	if err := h.callsChannel.SendRequest(request).ReceiveReply(reply); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (h *PolicerVppHandler) PolicerInput(swIfIndex, policerIndex uint32, apply bool) error {
+	request := &vpp_policer.PolicerInputV2{
+		SwIfIndex:    interface_types.InterfaceIndex(swIfIndex),
+		PolicerIndex: policerIndex,
+		Apply:        apply,
+	}
+	// prepare reply
+	reply := &vpp_policer.PolicerInputV2Reply{}
+	// send request and obtain reply
+	if err := h.callsChannel.SendRequest(request).ReceiveReply(reply); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (h *PolicerVppHandler) PolicerOutput(swIfIndex, policerIndex uint32, apply bool) error {
+	request := &vpp_policer.PolicerOutputV2{
+		SwIfIndex:    interface_types.InterfaceIndex(swIfIndex),
+		PolicerIndex: policerIndex,
+		Apply:        apply,
+	}
+	// prepare reply
+	reply := &vpp_policer.PolicerOutputV2Reply{}
 	// send request and obtain reply
 	if err := h.callsChannel.SendRequest(request).ReceiveReply(reply); err != nil {
 		return err

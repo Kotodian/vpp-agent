@@ -26,6 +26,7 @@ import "ligato/vpp/nat/nat.proto";
 import "ligato/vpp/punt/punt.proto";
 import "ligato/vpp/srv6/srv6.proto";
 import "ligato/vpp/wireguard/wireguard.proto";
+import "ligato/vpp/policer/policer.proto";
 
 // ConfigData holds the entire VPP configuration.
 message ConfigData {
@@ -76,6 +77,8 @@ message ConfigData {
     repeated wireguard.Peer wg_peers = 93;
 
     dns.DNSCache dns_cache = 100;
+
+    repeated policer.PolicerConfig policers = 110;
 }
 
 message Notification {

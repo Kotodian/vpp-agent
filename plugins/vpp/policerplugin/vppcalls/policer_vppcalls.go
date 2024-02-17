@@ -13,9 +13,15 @@ type PolicerVppAPI interface {
 	// Add policer via binary API
 	AddPolicer(cfg *policer.PolicerConfig) (uint32, error)
 	// Update policer via binary API
-	UpdatePolicer(policer_index uint32, cfg *policer.PolicerConfig) error
+	UpdatePolicer(policerIndex uint32, cfg *policer.PolicerConfig) error
+	// Reset policer via binary API
+	ResetPolicer(policerIndex uint32) error
 	// Del policer via binary API
-	DelPolicer(policer_index uint32) error
+	DelPolicer(policerIndex uint32) error
+	// Enable or disable policer-input feature via binary API
+	PolicerInput(swIfIndex uint32, policerIndex uint32, apply bool) error
+	// Enable or disable policer-output feature via binary API
+	PolicerOutput(swIfIndex uint32, policerIndex uint32, apply bool) error
 }
 
 // PolicerVPPRead provides read methods for policer

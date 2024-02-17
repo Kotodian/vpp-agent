@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package ligato.vpp.policer;
 
-option go_package = "go.ligato.io/vpp-agent/v3/proto/ligato/policer;vpp_policer";
+option go_package = "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer;vpp_policer";
 
 // QoS Rate Types
 enum Sse2QosRateType {
@@ -56,4 +56,13 @@ message PolicerConfig {
   Sse2QosAction conformAction = 10;
   Sse2QosAction exceedAction = 11;
   Sse2QosAction violateAction = 12;
+  // Policer Interface Feature
+  message Interface {
+    // Interface name
+    string name = 1;
+    // policer-input feature or policer-output feature
+    bool isOutput = 2;
+  }
+  repeated Interface interfaces = 13;
 }
+

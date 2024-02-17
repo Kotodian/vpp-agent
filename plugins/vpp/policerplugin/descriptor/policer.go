@@ -3,6 +3,7 @@ package descriptor
 import (
 	"fmt"
 
+	"go.ligato.io/cn-infra/v2/idxmap"
 	"go.ligato.io/cn-infra/v2/logging"
 	"go.ligato.io/vpp-agent/v3/pkg/models"
 	kvs "go.ligato.io/vpp-agent/v3/plugins/kvscheduler/api"
@@ -42,10 +43,15 @@ func (d *PolicerDescriptor) GetDescriptor() *adapter.PolicerDescriptor {
 		KeySelector:     policer.ModelPolicerConfig.IsKeyValid,
 		ValueComparator: d.EquivalentPolicers,
 		Validate:        d.Validate,
+		DerivedValues:   d.DerivedValues,
 		Create:          d.Create,
 		Update:          d.Update,
 		Delete:          d.Delete,
+		Retrieve:        d.Retrieve,
 		WithMetadata:    true,
+		MetadataMapFactory: func() idxmap.NamedMappingRW {
+			return policeridx.NewPolicerIndex(d.log, "vpp-policer-index")
+		},
 	}
 }
 
@@ -57,6 +63,19 @@ func (d *PolicerDescriptor) EquivalentPolicers(key string, oldPolicer, newPolice
 func (d *PolicerDescriptor) Validate(key string, policer *policer.PolicerConfig) (err error) {
 	//TODO: add validation
 	return nil
+}
+
+// DerivedValues derives policer.PolicerConfig_Interface for every interface assigned to the Policer.
+func (d *PolicerDescriptor) DerivedValues(key string, p *policer.PolicerConfig) (derValues []kvs.KeyValuePair) {
+	// Policer interfaces
+	for _, policerIface := range p.Interfaces {
+		derValues = append(derValues, kvs.KeyValuePair{
+			Key:   policer.DerivedPolicerInterfaceKey(p.Name, policerIface.Name, policerIface.IsOutput),
+			Value: policerIface,
+		})
+	}
+
+	return derValues
 }
 
 // Create adds a new policer.
