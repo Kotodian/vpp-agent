@@ -69,9 +69,9 @@ func (policerIdx *policerMetadataIndex) LookupByName(name string) (metadata *Pol
 }
 
 // LookupByIndex looks up previously stored item identified by name in mapping.
-func (aclIdx *policerMetadataIndex) LookupByIndex(idx uint32) (name string, metadata *PolicerMetadata, exists bool) {
+func (policerIdx *policerMetadataIndex) LookupByIndex(idx uint32) (name string, metadata *PolicerMetadata, exists bool) {
 	var item idxvpp.WithIndex
-	name, item, exists = aclIdx.nameToIndex.LookupByIndex(idx)
+	name, item, exists = policerIdx.nameToIndex.LookupByIndex(idx)
 	if exists {
 		var isIfaceMeta bool
 		metadata, isIfaceMeta = item.(*PolicerMetadata)
@@ -82,7 +82,7 @@ func (aclIdx *policerMetadataIndex) LookupByIndex(idx uint32) (name string, meta
 	return
 }
 
-func (aclIdx *policerMetadataIndex) WatchPolicers(subscriber string, channel chan<- PolicerMetadataDto) {
+func (policerIdx *policerMetadataIndex) WatchPolicers(subscriber string, channel chan<- PolicerMetadataDto) {
 	watcher := func(dto idxmap.NamedMappingGenericEvent) {
 		typedMeta, ok := dto.Value.(*PolicerMetadata)
 		if !ok {
@@ -95,11 +95,11 @@ func (aclIdx *policerMetadataIndex) WatchPolicers(subscriber string, channel cha
 		select {
 		case channel <- msg:
 		case <-time.After(idxmap.DefaultNotifTimeout):
-			aclIdx.log.Warn("Unable to deliver notification")
+			policerIdx.log.Warn("Unable to deliver notification")
 		}
 	}
-	if err := aclIdx.Watch(subscriber, watcher); err != nil {
-		aclIdx.log.Error(err)
+	if err := policerIdx.Watch(subscriber, watcher); err != nil {
+		policerIdx.log.Error(err)
 	}
 }
 

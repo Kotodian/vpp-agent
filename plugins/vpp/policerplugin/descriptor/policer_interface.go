@@ -4,7 +4,6 @@ import (
 	"github.com/pkg/errors"
 	"go.ligato.io/cn-infra/v2/logging"
 	kvs "go.ligato.io/vpp-agent/v3/plugins/kvscheduler/api"
-	"go.ligato.io/vpp-agent/v3/plugins/vpp/ifplugin/ifaceidx"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/descriptor/adapter"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/policeridx"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/vppcalls"
@@ -25,14 +24,12 @@ type PolicerInterfaceDescriptor struct {
 	log            logging.Logger
 	policerHandler vppcalls.PolicerVppAPI
 	policerIndex   policeridx.PolicerMetadataIndex
-	ifIndex        ifaceidx.IfaceMetadataIndex
 }
 
 // NewPolicerInterfaceDescriptor creates a new instance of the policer descriptor.
-func NewPolicerInterfaceDescriptor(ifIndex ifaceidx.IfaceMetadataIndex, policerIndex policeridx.PolicerMetadataIndex, policerHandler vppcalls.PolicerVppAPI, log logging.PluginLogger) *PolicerInterfaceDescriptor {
+func NewPolicerInterfaceDescriptor(policerIndex policeridx.PolicerMetadataIndex, policerHandler vppcalls.PolicerVppAPI, log logging.PluginLogger) *PolicerInterfaceDescriptor {
 	return &PolicerInterfaceDescriptor{
 		log:            log.NewLogger("policer-interface-descriptor"),
-		ifIndex:        ifIndex,
 		policerIndex:   policerIndex,
 		policerHandler: policerHandler,
 	}
@@ -55,16 +52,9 @@ func (d *PolicerInterfaceDescriptor) GetDescriptor() *adapter.PolicerInterfaceDe
 // Create puts interface into policer.
 func (d *PolicerInterfaceDescriptor) Create(key string, policerIf *policer.PolicerConfig_Interface) (metadata interface{}, err error) {
 	// get policer name
-	policerName, ifName, isOutput, isPolicerInterfaceKey := policer.ParseDerivedPolicerInterfaceKey(key)
+	policerName, _, isOutput, isPolicerInterfaceKey := policer.ParseDerivedPolicerInterfaceKey(key)
 	if !isPolicerInterfaceKey {
 		err = errors.Errorf("provided key is not a derived Policer <=> interface binding key %s", key)
-		d.log.Error(err)
-		return nil, err
-	}
-
-	ifMetadata, exists := d.ifIndex.LookupByName(ifName)
-	if !exists {
-		err = errors.Errorf("interface name: %s doesn't exists", ifName)
 		d.log.Error(err)
 		return nil, err
 	}
@@ -78,13 +68,13 @@ func (d *PolicerInterfaceDescriptor) Create(key string, policerIf *policer.Polic
 
 	// put interface into the policer
 	if isOutput {
-		err = d.policerHandler.PolicerOutput(ifMetadata.SwIfIndex, policerMetadata.GetIndex(), true)
+		err = d.policerHandler.PolicerOutput(policerMetadata.GetIndex(), policerIf, true)
 		if err != nil {
 			d.log.Error(err)
 			return nil, err
 		}
 	} else {
-		err = d.policerHandler.PolicerInput(ifMetadata.SwIfIndex, policerMetadata.GetIndex(), true)
+		err = d.policerHandler.PolicerInput(policerMetadata.GetIndex(), policerIf, true)
 		if err != nil {
 			d.log.Error(err)
 			return nil, err
@@ -97,16 +87,9 @@ func (d *PolicerInterfaceDescriptor) Create(key string, policerIf *policer.Polic
 // Delete removes interface into policer.
 func (d *PolicerInterfaceDescriptor) Delete(key string, policerIf *policer.PolicerConfig_Interface, _ interface{}) (err error) {
 	// get policer name
-	policerName, ifName, isOutput, isPolicerInterfaceKey := policer.ParseDerivedPolicerInterfaceKey(key)
+	policerName, _, isOutput, isPolicerInterfaceKey := policer.ParseDerivedPolicerInterfaceKey(key)
 	if !isPolicerInterfaceKey {
 		err = errors.Errorf("provided key is not a derived Policer <=> interface binding key %s", key)
-		d.log.Error(err)
-		return err
-	}
-
-	ifMetadata, exists := d.ifIndex.LookupByName(ifName)
-	if !exists {
-		err = errors.Errorf("interface name: %s doesn't exists", ifName)
 		d.log.Error(err)
 		return err
 	}
@@ -120,13 +103,13 @@ func (d *PolicerInterfaceDescriptor) Delete(key string, policerIf *policer.Polic
 
 	// put interface into the policer
 	if isOutput {
-		err = d.policerHandler.PolicerOutput(ifMetadata.SwIfIndex, policerMetadata.GetIndex(), false)
+		err = d.policerHandler.PolicerOutput(policerMetadata.GetIndex(), policerIf, false)
 		if err != nil {
 			d.log.Error(err)
 			return err
 		}
 	} else {
-		err = d.policerHandler.PolicerInput(ifMetadata.SwIfIndex, policerMetadata.GetIndex(), false)
+		err = d.policerHandler.PolicerInput(policerMetadata.GetIndex(), policerIf, false)
 		if err != nil {
 			d.log.Error(err)
 			return err

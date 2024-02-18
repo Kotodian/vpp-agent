@@ -169,9 +169,13 @@ func (h *PolicerVppHandler) ResetPolicer(policerIndex uint32) error {
 	return nil
 }
 
-func (h *PolicerVppHandler) PolicerInput(swIfIndex, policerIndex uint32, apply bool) error {
+func (h *PolicerVppHandler) PolicerInput(policerIndex uint32, iface *policer.PolicerConfig_Interface, apply bool) error {
+	im, exists := h.ifIdx.LookupByName(iface.Name)
+	if !exists {
+		return fmt.Errorf("interface: %s doesn't exist", iface.Name)
+	}
 	request := &vpp_policer.PolicerInputV2{
-		SwIfIndex:    interface_types.InterfaceIndex(swIfIndex),
+		SwIfIndex:    interface_types.InterfaceIndex(im.SwIfIndex),
 		PolicerIndex: policerIndex,
 		Apply:        apply,
 	}
@@ -184,9 +188,13 @@ func (h *PolicerVppHandler) PolicerInput(swIfIndex, policerIndex uint32, apply b
 	return nil
 }
 
-func (h *PolicerVppHandler) PolicerOutput(swIfIndex, policerIndex uint32, apply bool) error {
+func (h *PolicerVppHandler) PolicerOutput(policerIndex uint32, iface *policer.PolicerConfig_Interface, apply bool) error {
+	im, exists := h.ifIdx.LookupByName(iface.Name)
+	if !exists {
+		return fmt.Errorf("interface: %s doesn't exist", iface.Name)
+	}
 	request := &vpp_policer.PolicerOutputV2{
-		SwIfIndex:    interface_types.InterfaceIndex(swIfIndex),
+		SwIfIndex:    interface_types.InterfaceIndex(im.SwIfIndex),
 		PolicerIndex: policerIndex,
 		Apply:        apply,
 	}

@@ -5,6 +5,7 @@ import (
 	"go.ligato.io/cn-infra/v2/logging"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2310"
 	vpp_policer "go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2310/policer"
+	"go.ligato.io/vpp-agent/v3/plugins/vpp/ifplugin/ifaceidx"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/vppcalls"
 )
 
@@ -18,9 +19,10 @@ func init() {
 
 type PolicerVppHandler struct {
 	callsChannel govppapi.Channel
+	ifIdx        ifaceidx.IfaceMetadataIndex
 	log          logging.Logger
 }
 
-func NewPolicerVppHandler(ch govppapi.Channel, log logging.Logger) vppcalls.PolicerVppAPI {
-	return &PolicerVppHandler{ch, log}
+func NewPolicerVppHandler(ch govppapi.Channel, ifIdx ifaceidx.IfaceMetadataIndex, log logging.Logger) vppcalls.PolicerVppAPI {
+	return &PolicerVppHandler{ch, ifIdx, log}
 }

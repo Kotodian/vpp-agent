@@ -60,7 +60,7 @@ func (p *PolicerPlugin) Init() (err error) {
 	if !withIndex {
 		return errors.New("missing index with policer metadata")
 	}
-	p.policerIfDescriptor = descriptor.NewPolicerInterfaceDescriptor(p.IfPlugin.GetInterfaceIndex(), p.GetPolicerIndex(), p.PolicerHandler, p.Log)
+	p.policerIfDescriptor = descriptor.NewPolicerInterfaceDescriptor(p.GetPolicerIndex(), p.PolicerHandler, p.Log)
 	policerIfDescriptor := adapter.NewPolicerInterfaceDescriptor(p.policerIfDescriptor.GetDescriptor())
 	err = p.KVScheduler.RegisterKVDescriptor(policerIfDescriptor)
 	if err != nil {
