@@ -30,6 +30,7 @@ import (
 	l2vppcalls "go.ligato.io/vpp-agent/v3/plugins/vpp/l2plugin/vppcalls"
 	l3vppcalls "go.ligato.io/vpp-agent/v3/plugins/vpp/l3plugin/vppcalls"
 	natvppcalls "go.ligato.io/vpp-agent/v3/plugins/vpp/natplugin/vppcalls"
+	policervppcalls "go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/vppcalls"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/puntplugin/vppcalls"
 	wireguardvppcalls "go.ligato.io/vpp-agent/v3/plugins/vpp/wireguardplugin/vppcalls"
 	rpc "go.ligato.io/vpp-agent/v3/proto/ligato/configurator"
@@ -42,6 +43,7 @@ import (
 	vpp_l2 "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/l2"
 	vpp_l3 "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/l3"
 	vpp_nat "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/nat"
+	vpp_policer "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer"
 	vpp_punt "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/punt"
 	vpp_wg "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/wireguard"
 )
@@ -52,10 +54,11 @@ type dumpService struct {
 	mux sync.Mutex
 
 	// VPP Handlers
-	ifHandler    ifvppcalls.InterfaceVppRead
-	l2Handler    l2vppcalls.L2VppAPI
-	l3Handler    l3vppcalls.L3VppAPI
-	ipsecHandler ipsecvppcalls.IPSecVPPRead
+	ifHandler      ifvppcalls.InterfaceVppRead
+	l2Handler      l2vppcalls.L2VppAPI
+	l3Handler      l3vppcalls.L3VppAPI
+	ipsecHandler   ipsecvppcalls.IPSecVPPRead
+	policerHandler policervppcalls.PolicerVppRead
 	// plugins
 	aclHandler       aclvppcalls.ACLVppRead
 	abfHandler       abfvppcalls.ABFVppRead
@@ -174,6 +177,7 @@ func (svc *dumpService) Dump(ctx context.Context, req *rpc.DumpRequest) (*rpc.Du
 		svc.log.Errorf("DumpWgPeers failed: %v", err)
 		return nil, err
 	}
+	dump.VppConfig.Policers, err = svc.DumpPolicers()
 
 	// -----
 	// Linux
@@ -489,6 +493,20 @@ func (svc *dumpService) DumpWgPeers() (peers []*vpp_wg.Peer, err error) {
 		return nil, err
 	}
 	peers = append(peers, _peers...)
+	return
+}
+
+func (svc *dumpService) DumpPolicers() (policers []*vpp_policer.PolicerConfig, err error) {
+	if svc.policerHandler == nil {
+		// handler is not available
+		return nil, nil
+	}
+
+	_policers, err := svc.policerHandler.DumpPolicers()
+	if err != nil {
+		return nil, err
+	}
+	policers = append(policers, _policers...)
 	return
 }
 
