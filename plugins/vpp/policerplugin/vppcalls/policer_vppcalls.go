@@ -57,9 +57,9 @@ func AddHandlerVersion(version vpp.Version, msgs []govppapi.Message, h NewHandle
 	})
 }
 
-func CompatiblePolicerVppHandler(c vpp.Client, log logging.Logger) PolicerVppAPI {
+func CompatiblePolicerVppHandler(c vpp.Client, ifIdx ifaceidx.IfaceMetadataIndex, log logging.Logger) PolicerVppAPI {
 	if v := Handler.FindCompatibleVersion(c); v != nil {
-		return v.NewHandler(c, log).(PolicerVppAPI)
+		return v.NewHandler(c, ifIdx, log).(PolicerVppAPI)
 	}
 	return nil
 }

@@ -41,7 +41,7 @@ type Deps struct {
 
 func (p *PolicerPlugin) Init() (err error) {
 	// init policer handler
-	p.PolicerHandler = vppcalls.CompatiblePolicerVppHandler(p.VPP, p.Log)
+	p.PolicerHandler = vppcalls.CompatiblePolicerVppHandler(p.VPP, p.IfPlugin.GetInterfaceIndex(), p.Log)
 	if p.PolicerHandler == nil {
 		return errors.New("Policer handler is not available")
 	}
