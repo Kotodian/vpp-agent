@@ -93,6 +93,12 @@ func (x Nat44EiConfigFlags) String() string {
 	return s
 }
 
+// Add/del NAT44 address range
+//   - first_ip_address - first IPv4 address
+//   - last_ip_address - last IPv4 address
+//   - vrf_id - VRF id of tenant, ~0 means independent of VRF
+//   - is_add - true if add, false if delete
+//
 // Nat44EiAddDelAddressRange defines message 'nat44_ei_add_del_address_range'.
 // InProgress: the message form may change in the future versions
 type Nat44EiAddDelAddressRange struct {
@@ -175,6 +181,17 @@ func (m *Nat44EiAddDelAddressRangeReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Add/delete NAT44 identity mapping
+//   - is_add - true if add, false if delete
+//   - flags - flag NAT44_EI_IS_ADDR_ONLY if address only mapping
+//   - ip_address - IPv4 address
+//   - protocol - IP protocol
+//   - port - port number
+//   - sw_if_index - interface (if set ip_address is ignored, ~0 means not
+//     used)
+//   - vfr_id - VRF ID (if ~0 use default VRF)
+//   - tag - opaque string tag
+//
 // Nat44EiAddDelIdentityMapping defines message 'nat44_ei_add_del_identity_mapping'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiAddDelIdentityMapping struct {
@@ -275,6 +292,11 @@ func (m *Nat44EiAddDelIdentityMappingReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Add/delete NAT44 pool address from specific interfce
+//   - is_add - true if add, false if delete
+//   - sw_if_index - software index of the interface
+//   - flags - flag NAT_TWICE_NAT if NAT address range for external hosts
+//
 // Nat44EiAddDelInterfaceAddr defines message 'nat44_ei_add_del_interface_addr'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiAddDelInterfaceAddr struct {
@@ -353,6 +375,12 @@ func (m *Nat44EiAddDelInterfaceAddrReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// add/del NAT output interface (postrouting
+//
+//	       in2out translation)
+//	- is_add - true if add, false if delete
+//	- sw_if_index - software index of the interface
+//
 // Nat44EiAddDelOutputInterface defines message 'nat44_ei_add_del_output_interface'.
 type Nat44EiAddDelOutputInterface struct {
 	IsAdd     bool                           `binapi:"bool,name=is_add" json:"is_add,omitempty"`
@@ -427,6 +455,20 @@ func (m *Nat44EiAddDelOutputInterfaceReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Add/delete NAT44 static mapping
+//   - is_add - true if add, false if delete
+//   - flags - flag NAT44_EI_IS_ADDR_ONLY if address only mapping
+//   - local_ip_address - local IPv4 address
+//   - external_ip_address - external IPv4 address
+//   - protocol - IP protocol, used only if addr_only=0
+//   - local_port - local port number, used only if addr_only=0
+//   - external_port - external port number, used only if addr_only=0
+//   - external_sw_if_index - external interface (if set
+//     external_ip_address is ignored, ~0 means not
+//     used)
+//   - vfr_id - VRF ID
+//   - tag - opaque string tag
+//
 // Nat44EiAddDelStaticMapping defines message 'nat44_ei_add_del_static_mapping'.
 // InProgress: the message form may change in the future versions
 type Nat44EiAddDelStaticMapping struct {
@@ -533,6 +575,10 @@ func (m *Nat44EiAddDelStaticMappingReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT44 address details response
+//   - ip_address - IPv4 address
+//   - vrf_id - VRF id of tenant, ~0 means independent of VRF
+//
 // Nat44EiAddressDetails defines message 'nat44_ei_address_details'.
 // InProgress: the message form may change in the future versions
 type Nat44EiAddressDetails struct {
@@ -571,6 +617,7 @@ func (m *Nat44EiAddressDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump NAT44 addresses
 // Nat44EiAddressDump defines message 'nat44_ei_address_dump'.
 // InProgress: the message form may change in the future versions
 type Nat44EiAddressDump struct{}
@@ -599,6 +646,18 @@ func (m *Nat44EiAddressDump) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Delete NAT44 session
+//   - ip_address - IPv4 address
+//   - protocol - IP protocol
+//   - port - port number
+//   - vfr_id - VRF ID
+//   - flags - flag NAT_IS_INSIDE if interface is inside or
+//     interface is outside,
+//     flag NAT_IS_EXT_HOST_VALID if external host address and
+//     port are valid
+//   - ext_host_address - external host IPv4 address
+//   - ext_host_port - external host port
+//
 // Nat44EiDelSession defines message 'nat44_ei_del_session'.
 // InProgress: the message form may change in the future versions
 type Nat44EiDelSession struct {
@@ -691,6 +750,10 @@ func (m *Nat44EiDelSessionReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Del NAT44 user
+//   - ip_address - IPv4 address
+//   - fib_index - FIB index
+//
 // Nat44EiDelUser defines message 'nat44_ei_del_user'.
 // InProgress: the message form may change in the future versions
 type Nat44EiDelUser struct {
@@ -763,6 +826,12 @@ func (m *Nat44EiDelUserReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Enable/disable forwarding for NAT44
+//
+//	Forward packets which don't match existing translation
+//	or static mapping instead of dropping them.
+//	- enable - true for enable, false for disable
+//
 // Nat44EiForwardingEnableDisable defines message 'nat44_ei_forwarding_enable_disable'.
 // InProgress: the message form may change in the future versions
 type Nat44EiForwardingEnableDisable struct {
@@ -835,6 +904,7 @@ func (m *Nat44EiForwardingEnableDisableReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Get address and port assignment algorithm
 // Nat44EiGetAddrAndPortAllocAlg defines message 'nat44_ei_get_addr_and_port_alloc_alg'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiGetAddrAndPortAllocAlg struct{}
@@ -865,6 +935,17 @@ func (m *Nat44EiGetAddrAndPortAllocAlg) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Get address and port assignment algorithm reply
+//   - retval - return code
+//   - alg - address and port assignment algorithm:
+//     0 - default, 1 - MAP-E, 2 - port range
+//     (see nat44_ei_addr_and_port_alloc_alg_t in nat.h)
+//   - psid_offset - number of offset bits (valid only for MAP-E alg)
+//   - psid_length - length of PSID (valid only for MAP-E alg)
+//   - psid - Port Set Identifier (PSID) value (valid only for MAP-E alg)
+//   - start_port - beginning of the port range
+//   - end_port - end of the port range
+//
 // Nat44EiGetAddrAndPortAllocAlgReply defines message 'nat44_ei_get_addr_and_port_alloc_alg_reply'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiGetAddrAndPortAllocAlgReply struct {
@@ -925,6 +1006,7 @@ func (m *Nat44EiGetAddrAndPortAllocAlgReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Get TCP MSS rewriting configuration
 // Nat44EiGetMssClamping defines message 'nat44_ei_get_mss_clamping'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiGetMssClamping struct{}
@@ -953,6 +1035,11 @@ func (m *Nat44EiGetMssClamping) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Get TCP MSS rewriting configuration reply
+//   - retval - return code
+//   - mss_value - MSS value to be used for MSS rewriting
+//   - enable - if true enable MSS rewriting feature else disable
+//
 // Nat44EiGetMssClampingReply defines message 'nat44_ei_get_mss_clamping_reply'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiGetMssClampingReply struct {
@@ -995,6 +1082,7 @@ func (m *Nat44EiGetMssClampingReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Flush the current HA data (for testing)
 // Nat44EiHaFlush defines message 'nat44_ei_ha_flush'.
 // InProgress: the message form may change in the future versions
 type Nat44EiHaFlush struct{}
@@ -1057,6 +1145,7 @@ func (m *Nat44EiHaFlushReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Get HA failover/remote settings
 // Nat44EiHaGetFailover defines message 'nat44_ei_ha_get_failover'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiHaGetFailover struct{}
@@ -1085,6 +1174,13 @@ func (m *Nat44EiHaGetFailover) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Get HA failover/remote settings reply
+//   - retval - return code
+//   - ip_address - failover IP4 address
+//   - port - failvoer UDP port number
+//   - session_refresh_interval - number of seconds after which to send
+//     session counters refresh
+//
 // Nat44EiHaGetFailoverReply defines message 'nat44_ei_ha_get_failover_reply'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiHaGetFailoverReply struct {
@@ -1131,6 +1227,7 @@ func (m *Nat44EiHaGetFailoverReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Get HA listener/local configuration
 // Nat44EiHaGetListener defines message 'nat44_ei_ha_get_listener'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiHaGetListener struct{}
@@ -1159,6 +1256,12 @@ func (m *Nat44EiHaGetListener) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Get HA listener/local configuration reply
+//   - retval - return code
+//   - ip_address - local IP4 address
+//   - port - local UDP port number
+//   - path_mtu - Path MTU between local and failover
+//
 // Nat44EiHaGetListenerReply defines message 'nat44_ei_ha_get_listener_reply'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiHaGetListenerReply struct {
@@ -1205,6 +1308,12 @@ func (m *Nat44EiHaGetListenerReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Resync HA (resend existing sessions to new failover)
+//   - want_resync_event - resync completed event sent to the sender via
+//     nat44_ei_ha_resync_completed_event API message if
+//     non-zero
+//   - pid - sender's pid
+//
 // Nat44EiHaResync defines message 'nat44_ei_ha_resync'.
 // InProgress: the message form may change in the future versions
 type Nat44EiHaResync struct {
@@ -1243,6 +1352,10 @@ func (m *Nat44EiHaResync) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Tell client about a HA resync completion event
+//   - pid - client pid registered to receive notification
+//   - missed_count - number of missed (not ACKed) messages
+//
 // Nat44EiHaResyncCompletedEvent defines message 'nat44_ei_ha_resync_completed_event'.
 // InProgress: the message form may change in the future versions
 type Nat44EiHaResyncCompletedEvent struct {
@@ -1317,6 +1430,12 @@ func (m *Nat44EiHaResyncReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Set HA failover (remote settings)
+//   - ip_address - failover IP4 address
+//   - port - failvoer UDP port number
+//   - session_refresh_interval - number of seconds after which to send
+//     session counters refresh
+//
 // Nat44EiHaSetFailover defines message 'nat44_ei_ha_set_failover'.
 // InProgress: the message form may change in the future versions
 type Nat44EiHaSetFailover struct {
@@ -1393,6 +1512,11 @@ func (m *Nat44EiHaSetFailoverReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Set HA listener (local settings)
+//   - ip_address - local IP4 address
+//   - port - local UDP port number
+//   - path_mtu - path MTU between local and failover
+//
 // Nat44EiHaSetListener defines message 'nat44_ei_ha_set_listener'.
 // InProgress: the message form may change in the future versions
 type Nat44EiHaSetListener struct {
@@ -1469,6 +1593,15 @@ func (m *Nat44EiHaSetListenerReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT44 identity mapping details response
+//   - flags - flag NAT44_EI_ADDR_ONLY if address only mapping
+//   - ip_address - IPv4 address
+//   - protocol - IP protocol
+//   - port - port number
+//   - sw_if_index - interface
+//   - vfr_id - VRF ID
+//   - tag - opaque string tag
+//
 // Nat44EiIdentityMappingDetails defines message 'nat44_ei_identity_mapping_details'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiIdentityMappingDetails struct {
@@ -1529,6 +1662,7 @@ func (m *Nat44EiIdentityMappingDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump NAT44 identity mappings
 // Nat44EiIdentityMappingDump defines message 'nat44_ei_identity_mapping_dump'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiIdentityMappingDump struct{}
@@ -1557,6 +1691,12 @@ func (m *Nat44EiIdentityMappingDump) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Enable/disable NAT44 feature on the interface
+//   - is_add - true if add, false if delete
+//   - flags - flag NAT_IS_INSIDE if interface is inside else
+//     interface is outside
+//   - sw_if_index - software index of the interface
+//
 // Nat44EiInterfaceAddDelFeature defines message 'nat44_ei_interface_add_del_feature'.
 // InProgress: the message form may change in the future versions
 type Nat44EiInterfaceAddDelFeature struct {
@@ -1637,6 +1777,14 @@ func (m *Nat44EiInterfaceAddDelFeatureReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Enable/disbale NAT44 as an interface output feature (postrouting
+//
+//	       in2out translation)
+//	- is_add - true if add, false if delete
+//	- flags - flag NAT_IS_INSIDE if interface is inside else
+//	               interface is outside
+//	- sw_if_index - software index of the interface
+//
 // Nat44EiInterfaceAddDelOutputFeature defines message 'nat44_ei_interface_add_del_output_feature'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiInterfaceAddDelOutputFeature struct {
@@ -1719,6 +1867,9 @@ func (m *Nat44EiInterfaceAddDelOutputFeatureReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT44 pool addresses interfaces details response
+//   - sw_if_index - software index of the interface
+//
 // Nat44EiInterfaceAddrDetails defines message 'nat44_ei_interface_addr_details'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiInterfaceAddrDetails struct {
@@ -1753,6 +1904,7 @@ func (m *Nat44EiInterfaceAddrDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump NAT44 pool addresses interfaces
 // Nat44EiInterfaceAddrDump defines message 'nat44_ei_interface_addr_dump'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiInterfaceAddrDump struct{}
@@ -1781,6 +1933,13 @@ func (m *Nat44EiInterfaceAddrDump) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT44 interface details response
+//   - sw_if_index - software index of the interface
+//   - flags - flag NAT_IS_INSIDE if interface is inside,
+//     flag NAT_IS_OUTSIDE if interface is outside
+//     and if both flags are set the interface is
+//     both inside and outside
+//
 // Nat44EiInterfaceDetails defines message 'nat44_ei_interface_details'.
 // InProgress: the message form may change in the future versions
 type Nat44EiInterfaceDetails struct {
@@ -1819,6 +1978,7 @@ func (m *Nat44EiInterfaceDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump interfaces with NAT44 feature
 // Nat44EiInterfaceDump defines message 'nat44_ei_interface_dump'.
 // InProgress: the message form may change in the future versions
 type Nat44EiInterfaceDump struct{}
@@ -1847,6 +2007,11 @@ func (m *Nat44EiInterfaceDump) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT44 interface with output feature details response
+//   - flags - flag NAT_IS_INSIDE if interface is inside else
+//     interface is outside
+//   - sw_if_index - software index of the interface
+//
 // Nat44EiInterfaceOutputFeatureDetails defines message 'nat44_ei_interface_output_feature_details'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiInterfaceOutputFeatureDetails struct {
@@ -1887,6 +2052,7 @@ func (m *Nat44EiInterfaceOutputFeatureDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump interfaces with NAT44 output feature
 // Nat44EiInterfaceOutputFeatureDump defines message 'nat44_ei_interface_output_feature_dump'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiInterfaceOutputFeatureDump struct{}
@@ -1917,6 +2083,11 @@ func (m *Nat44EiInterfaceOutputFeatureDump) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Enable/disable NAT IPFIX logging
+//   - domain_id - observation domain ID
+//   - src_port - source port number
+//   - enable - true if enable, false if disable
+//
 // Nat44EiIpfixEnableDisable defines message 'nat44_ei_ipfix_enable_disable'.
 // InProgress: the message form may change in the future versions
 type Nat44EiIpfixEnableDisable struct {
@@ -2102,6 +2273,19 @@ func (m *Nat44EiOutputInterfaceGetReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Enable/disable NAT44 plugin
+//   - inside_vrf - inside vrf id
+//   - outside_vrf - outside vrf id
+//   - users - maximum number of users per thread
+//   - user_memory - overwrite hash allocation parameter
+//   - sessions - maximum number of sessions per thread
+//   - session_memory - overwrite hash allocation parameter
+//   - user_sessions - maximum number of sessions per user
+//   - enable - true if enable, false if disable
+//   - flags - flag NAT44_EI_IS_STATIC_MAPPING_ONLY,
+//     NAT44_EI_IS_CONNECTION_TRACKING,
+//     NAT44_EI_IS_OUT2IN_DPO
+//
 // Nat44EiPluginEnableDisable defines message 'nat44_ei_plugin_enable_disable'.
 // InProgress: the message form may change in the future versions
 type Nat44EiPluginEnableDisable struct {
@@ -2204,6 +2388,16 @@ func (m *Nat44EiPluginEnableDisableReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Set address and port assignment algorithm
+//   - alg - address and port assignment algorithm:
+//     0 - default, 1 - MAP-E, 2 - port range
+//     (see nat44_ei_addr_and_port_alloc_alg_t in nat.h)
+//   - psid_offset - number of offset bits (valid only for MAP-E alg)
+//   - psid_length - length of PSID (valid only for MAP-E alg)
+//   - psid - Port Set Identifier (PSID) value (valid only for MAP-E alg)
+//   - start_port - beginning of the port range
+//   - end_port - end of the port range
+//
 // Nat44EiSetAddrAndPortAllocAlg defines message 'nat44_ei_set_addr_and_port_alloc_alg'.
 // InProgress: the message form may change in the future versions
 type Nat44EiSetAddrAndPortAllocAlg struct {
@@ -2296,6 +2490,9 @@ func (m *Nat44EiSetAddrAndPortAllocAlgReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Set NAT handoff frame queue options
+//   - frame_queue_nelts - number of worker handoff frame queue elements
+//
 // Nat44EiSetFqOptions defines message 'nat44_ei_set_fq_options'.
 // InProgress: the message form may change in the future versions
 type Nat44EiSetFqOptions struct {
@@ -2364,6 +2561,9 @@ func (m *Nat44EiSetFqOptionsReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Set NAT44 logging level
+//   - log_level - logging level
+//
 // Nat44EiSetLogLevel defines message 'nat44_ei_set_log_level'.
 // Deprecated: the message will be removed in the future versions
 type Nat44EiSetLogLevel struct {
@@ -2432,6 +2632,10 @@ func (m *Nat44EiSetLogLevelReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Set TCP MSS rewriting configuration
+//   - mss_value - MSS value to be used for MSS rewriting
+//   - enable - if true enable MSS rewriting feature else disable
+//
 // Nat44EiSetMssClamping defines message 'nat44_ei_set_mss_clamping'.
 // InProgress: the message form may change in the future versions
 type Nat44EiSetMssClamping struct {
@@ -2504,6 +2708,12 @@ func (m *Nat44EiSetMssClampingReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Set values of timeouts for NAT sessions (seconds)
+//   - udp - UDP timeout (default 300sec)
+//   - tcp_established - TCP established timeout (default 7440sec)
+//   - tcp_transitory - TCP transitory timeout (default 240sec)
+//   - icmp - ICMP timeout (default 60sec)
+//
 // Nat44EiSetTimeouts defines message 'nat44_ei_set_timeouts'.
 // InProgress: the message form may change in the future versions
 type Nat44EiSetTimeouts struct {
@@ -2584,6 +2794,9 @@ func (m *Nat44EiSetTimeoutsReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Set NAT workers
+//   - worker_mask - NAT workers mask
+//
 // Nat44EiSetWorkers defines message 'nat44_ei_set_workers'.
 // InProgress: the message form may change in the future versions
 type Nat44EiSetWorkers struct {
@@ -2652,6 +2865,7 @@ func (m *Nat44EiSetWorkersReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Show NAT handoff frame queue options
 // Nat44EiShowFqOptions defines message 'nat44_ei_show_fq_options'.
 // InProgress: the message form may change in the future versions
 type Nat44EiShowFqOptions struct{}
@@ -2680,6 +2894,10 @@ func (m *Nat44EiShowFqOptions) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Show NAT handoff frame queue options reply
+//   - retval - return code for the request
+//   - frame_queue_nelts - number of worker handoff frame queue elements
+//
 // Nat44EiShowFqOptionsReply defines message 'nat44_ei_show_fq_options_reply'.
 // InProgress: the message form may change in the future versions
 type Nat44EiShowFqOptionsReply struct {
@@ -2718,6 +2936,7 @@ func (m *Nat44EiShowFqOptionsReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Show NAT44 plugin running config
 // Nat44EiShowRunningConfig defines message 'nat44_ei_show_running_config'.
 // InProgress: the message form may change in the future versions
 type Nat44EiShowRunningConfig struct{}
@@ -2746,6 +2965,19 @@ func (m *Nat44EiShowRunningConfig) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Show NAT44 plugin running config reply
+//   - retval - return code for the request
+//   - inside_vrf - default inside VRF id
+//   - outside_vrf - outside VRF id
+//   - users - maximum number of users per worker thread
+//   - sessions - maximum number of sessions per worker thread
+//   - user_sessions - maximum number of sessions per user
+//   - user_buckets - number of user hash buckets
+//   - translation_buckets - number of translation hash buckets
+//   - flags - flag NAT44_EI_IS_STATIC_MAPPING_ONLY,
+//     NAT44_EI_IS_CONNECTION_TRACKING,
+//     NAT44_EI_IS_OUT2IN_DPO
+//
 // Nat44EiShowRunningConfigReply defines message 'nat44_ei_show_running_config_reply'.
 // InProgress: the message form may change in the future versions
 type Nat44EiShowRunningConfigReply struct {
@@ -2839,6 +3071,17 @@ func (m *Nat44EiShowRunningConfigReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT44 static mapping details response
+//   - flags - flag NAT44_EI_IS_ADDR_ONLY if address only mapping,
+//   - local_ip_address - local IPv4 address
+//   - external_ip_address - external IPv4 address
+//   - protocol - IP protocol, valid only if no NAT_ADDR_ONLY flag
+//   - local_port - local port number, valid only if no NAT_ADDR_ONLY flag
+//   - external_port - external port number, valid only if no NAT_ADDR_ONLY flag
+//   - external_sw_if_index - external interface
+//   - vfr_id - VRF ID
+//   - tag - opaque string tag
+//
 // Nat44EiStaticMappingDetails defines message 'nat44_ei_static_mapping_details'.
 // InProgress: the message form may change in the future versions
 type Nat44EiStaticMappingDetails struct {
@@ -2905,6 +3148,7 @@ func (m *Nat44EiStaticMappingDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump NAT44 static mappings
 // Nat44EiStaticMappingDump defines message 'nat44_ei_static_mapping_dump'.
 // InProgress: the message form may change in the future versions
 type Nat44EiStaticMappingDump struct{}
@@ -2933,6 +3177,13 @@ func (m *Nat44EiStaticMappingDump) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT44 users response
+//
+//	@vrf_id - VRF ID
+//	- ip_address - IPv4 address
+//	- nsessions - number of dynamic sessions
+//	- nstaticsessions - number of static sessions
+//
 // Nat44EiUserDetails defines message 'nat44_ei_user_details'.
 // InProgress: the message form may change in the future versions
 type Nat44EiUserDetails struct {
@@ -2979,6 +3230,7 @@ func (m *Nat44EiUserDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump NAT44 users
 // Nat44EiUserDump defines message 'nat44_ei_user_dump'.
 // InProgress: the message form may change in the future versions
 type Nat44EiUserDump struct{}
@@ -3007,6 +3259,19 @@ func (m *Nat44EiUserDump) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT44 user's sessions response
+//   - outside_ip_address - outside IPv4 address
+//   - outside_port - outside port
+//   - inside_ip_address - inside IPv4 address
+//   - inside_port - inside port
+//   - protocol - protocol
+//   - flags - flag NAT_IS_STATIC if session is static
+//   - last_heard - last heard timer
+//   - total_bytes - count of bytes sent through session
+//   - total_pkts - count of pakets sent through session
+//   - ext_host_address - external host IPv4 address
+//   - ext_host_port - external host port
+//
 // Nat44EiUserSessionDetails defines message 'nat44_ei_user_session_details'.
 // InProgress: the message form may change in the future versions
 type Nat44EiUserSessionDetails struct {
@@ -3081,6 +3346,10 @@ func (m *Nat44EiUserSessionDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT44 user's sessions
+//   - ip_address - IPv4 address of the user to dump
+//   - vrf_id - VRF_ID
+//
 // Nat44EiUserSessionDump defines message 'nat44_ei_user_session_dump'.
 // InProgress: the message form may change in the future versions
 type Nat44EiUserSessionDump struct {
@@ -3119,6 +3388,20 @@ func (m *Nat44EiUserSessionDump) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT44 user's sessions response
+//   - outside_ip_address - outside IPv4 address
+//   - outside_port - outside port
+//   - inside_ip_address - inside IPv4 address
+//   - inside_port - inside port
+//   - protocol - protocol
+//   - flags - flag NAT_IS_STATIC if session is static
+//   - last_heard - last heard timer since VPP start
+//   - time_since_last_heard - difference between current vpp time and last_heard value
+//   - total_bytes - count of bytes sent through session
+//   - total_pkts - count of pakets sent through session
+//   - ext_host_address - external host IPv4 address
+//   - ext_host_port - external host port
+//
 // Nat44EiUserSessionV2Details defines message 'nat44_ei_user_session_v2_details'.
 // InProgress: the message form may change in the future versions
 type Nat44EiUserSessionV2Details struct {
@@ -3199,6 +3482,10 @@ func (m *Nat44EiUserSessionV2Details) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT44 user's sessions
+//   - ip_address - IPv4 address of the user to dump
+//   - vrf_id - VRF_ID
+//
 // Nat44EiUserSessionV2Dump defines message 'nat44_ei_user_session_v2_dump'.
 // InProgress: the message form may change in the future versions
 type Nat44EiUserSessionV2Dump struct {
@@ -3237,6 +3524,11 @@ func (m *Nat44EiUserSessionV2Dump) Unmarshal(b []byte) error {
 	return nil
 }
 
+// NAT workers details response
+//   - worker_index - worker index
+//   - lcore_id - lcore ID
+//   - name - worker name
+//
 // Nat44EiWorkerDetails defines message 'nat44_ei_worker_details'.
 // InProgress: the message form may change in the future versions
 type Nat44EiWorkerDetails struct {
@@ -3279,6 +3571,7 @@ func (m *Nat44EiWorkerDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump NAT workers
 // Nat44EiWorkerDump defines message 'nat44_ei_worker_dump'.
 // InProgress: the message form may change in the future versions
 type Nat44EiWorkerDump struct{}

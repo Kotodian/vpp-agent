@@ -25,6 +25,11 @@ const (
 	VersionCrc = 0x9cfaef64
 )
 
+// Add/del STN rules
+//   - ip_address - STN rule IP address
+//   - sw_if_index - Interface index
+//   - is_add - 1 if add, 0 if delete
+//
 // StnAddDelRule defines message 'stn_add_del_rule'.
 type StnAddDelRule struct {
 	IPAddress ip_types.Address               `binapi:"address,name=ip_address" json:"ip_address,omitempty"`
@@ -102,6 +107,11 @@ func (m *StnAddDelRuleReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// STN response to rules request
+//   - is_ip4 - 1 if address type is IPv4
+//   - ip_address - IP address
+//   - sw_if_index - Interface index
+//
 // StnRulesDetails defines message 'stn_rules_details'.
 type StnRulesDetails struct {
 	IPAddress ip_types.Address               `binapi:"address,name=ip_address" json:"ip_address,omitempty"`
@@ -142,6 +152,7 @@ func (m *StnRulesDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump STN rules
 // StnRulesDump defines message 'stn_rules_dump'.
 type StnRulesDump struct{}
 

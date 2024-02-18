@@ -23,6 +23,9 @@ const (
 	VersionCrc = 0x269575cd
 )
 
+// enable/disable name resolution
+//   - is_enable - 1 = enable, 0 = disable
+//
 // DNSEnableDisable defines message 'dns_enable_disable'.
 type DNSEnableDisable struct {
 	Enable uint8 `binapi:"u8,name=enable" json:"enable,omitempty"`
@@ -89,6 +92,11 @@ func (m *DNSEnableDisableReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// add or delete an upstream name server
+//   - is_ip6 - an ip6 name server
+//   - is_add - add = 1, delete = 0
+//   - server_address - server ip address
+//
 // DNSNameServerAddDel defines message 'dns_name_server_add_del'.
 type DNSNameServerAddDel struct {
 	IsIP6         uint8  `binapi:"u8,name=is_ip6" json:"is_ip6,omitempty"`
@@ -164,6 +172,10 @@ func (m *DNSNameServerAddDelReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// DNS IP -> name resolution request
+//   - is_ip6 - set if the reverse-DNS request is an ip6 address
+//   - address - the address to map to a name
+//
 // DNSResolveIP defines message 'dns_resolve_ip'.
 type DNSResolveIP struct {
 	IsIP6   uint8  `binapi:"u8,name=is_ip6" json:"is_ip6,omitempty"`
@@ -202,6 +214,10 @@ func (m *DNSResolveIP) Unmarshal(b []byte) error {
 	return nil
 }
 
+// DNS ip->name resolution reply
+//   - retval - return value, 0 => success
+//   - name - canonical name for the indicated IP address
+//
 // DNSResolveIPReply defines message 'dns_resolve_ip_reply'.
 type DNSResolveIPReply struct {
 	Retval int32  `binapi:"i32,name=retval" json:"retval,omitempty"`
@@ -240,6 +256,9 @@ func (m *DNSResolveIPReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// DNS name resolution request
+//   - name - the name to resolve
+//
 // DNSResolveName defines message 'dns_resolve_name'.
 type DNSResolveName struct {
 	Name []byte `binapi:"u8[256],name=name" json:"name,omitempty"`
@@ -274,6 +293,13 @@ func (m *DNSResolveName) Unmarshal(b []byte) error {
 	return nil
 }
 
+// DNS name resolution reply
+//   - retval - return value, 0 => success
+//   - ip4_set - indicates that the ip4 address is valid
+//   - ip6_set - indicates that the ip6 address is valid
+//   - ip4_address - the ip4 name resolution reply
+//   - ip6_address - the ip6 name resolution reply
+//
 // DNSResolveNameReply defines message 'dns_resolve_name_reply'.
 type DNSResolveNameReply struct {
 	Retval     int32  `binapi:"i32,name=retval" json:"retval,omitempty"`

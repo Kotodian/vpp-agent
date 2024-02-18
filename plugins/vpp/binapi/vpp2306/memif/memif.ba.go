@@ -85,6 +85,21 @@ func (x MemifRole) String() string {
 	return "MemifRole(" + strconv.Itoa(int(x)) + ")"
 }
 
+// Create memory interface
+//   - role - role of the interface in the connection (master/slave)
+//   - mode - interface mode
+//   - rx_queues - number of rx queues (only valid for slave)
+//   - tx_queues - number of tx queues (only valid for slave)
+//   - id - 32bit integer used to authenticate and match opposite sides
+//     of the connection
+//   - socket_id - socket filename id to be used for connection
+//     establishment
+//   - ring_size - the number of entries of RX/TX rings
+//   - buffer_size - size of the buffer allocated for each ring entry
+//   - no_zero_copy - if true, disable zero copy
+//   - hw_addr - interface MAC address
+//   - secret - optional, default is "", max length 24
+//
 // MemifCreate defines message 'memif_create'.
 type MemifCreate struct {
 	Role       MemifRole                 `binapi:"memif_role,name=role" json:"role,omitempty"`
@@ -158,6 +173,10 @@ func (m *MemifCreate) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Create memory interface response
+//   - retval - return value for request
+//   - sw_if_index - software index of the newly created interface
+//
 // MemifCreateReply defines message 'memif_create_reply'.
 type MemifCreateReply struct {
 	Retval    int32                          `binapi:"i32,name=retval" json:"retval,omitempty"`
@@ -195,6 +214,22 @@ func (m *MemifCreateReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Create memory interface
+//   - role - role of the interface in the connection (master/slave)
+//   - mode - interface mode
+//   - rx_queues - number of rx queues (only valid for slave)
+//   - tx_queues - number of tx queues (only valid for slave)
+//   - id - 32bit integer used to authenticate and match opposite sides
+//     of the connection
+//   - socket_id - socket filename id to be used for connection
+//     establishment
+//   - ring_size - the number of entries of RX/TX rings
+//   - buffer_size - size of the buffer allocated for each ring entry
+//   - no_zero_copy - if true, disable zero copy
+//   - use_dma - if true, use dma accelerate memory copy
+//   - hw_addr - interface MAC address
+//   - secret - optional, default is "", max length 24
+//
 // MemifCreateV2 defines message 'memif_create_v2'.
 type MemifCreateV2 struct {
 	Role       MemifRole                 `binapi:"memif_role,name=role" json:"role,omitempty"`
@@ -272,6 +307,10 @@ func (m *MemifCreateV2) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Create memory interface response
+//   - retval - return value for request
+//   - sw_if_index - software index of the newly created interface
+//
 // MemifCreateV2Reply defines message 'memif_create_v2_reply'.
 type MemifCreateV2Reply struct {
 	Retval    int32                          `binapi:"i32,name=retval" json:"retval,omitempty"`
@@ -309,6 +348,9 @@ func (m *MemifCreateV2Reply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Delete memory interface
+//   - sw_if_index - software index of the interface to delete
+//
 // MemifDelete defines message 'memif_delete'.
 type MemifDelete struct {
 	SwIfIndex interface_types.InterfaceIndex `binapi:"interface_index,name=sw_if_index" json:"sw_if_index,omitempty"`
@@ -375,6 +417,20 @@ func (m *MemifDeleteReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Memory interface details structure
+//   - sw_if_index - index of the interface
+//   - hw_addr - interface MAC address
+//   - id - id associated with the interface
+//   - role - role of the interface in the connection (master/slave)
+//   - mode - interface mode
+//   - zero_copy - zero copy flag present
+//   - socket_id - id of the socket filename used by this interface
+//     to establish new connections
+//   - ring_size - the number of entries of RX/TX rings
+//   - buffer_size - size of the buffer allocated for each ring entry
+//   - flags - interface_status flags
+//   - if_name - name of the interface
+//
 // MemifDetails defines message 'memif_details'.
 type MemifDetails struct {
 	SwIfIndex  interface_types.InterfaceIndex `binapi:"interface_index,name=sw_if_index" json:"sw_if_index,omitempty"`
@@ -448,6 +504,7 @@ func (m *MemifDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump all memory interfaces
 // MemifDump defines message 'memif_dump'.
 type MemifDump struct{}
 
@@ -475,6 +532,13 @@ func (m *MemifDump) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Create or remove named socket file for memif interfaces
+//   - is_add - 0 = remove, 1 = add association
+//   - socket_id - non-0 32-bit integer used to identify a socket file
+//   - socket_filename - filename of the socket to be used for connection
+//     establishment; id 0 always maps to default "/var/vpp/memif.sock";
+//     no socket filename needed when is_add == 0.
+//
 // MemifSocketFilenameAddDel defines message 'memif_socket_filename_add_del'.
 type MemifSocketFilenameAddDel struct {
 	IsAdd          bool   `binapi:"bool,name=is_add" json:"is_add,omitempty"`
@@ -551,6 +615,16 @@ func (m *MemifSocketFilenameAddDelReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Create or remove named socket file for memif interfaces
+//   - is_add - 0 = remove, 1 = add association
+//   - socket_id - non-0 32-bit integer used to identify a socket file
+//     ~0 means autogenerate
+//   - socket_filename - filename of the socket to be used for connection
+//     establishment; id 0 always maps to default "/var/vpp/memif.sock";
+//     no socket filename needed when is_add == 0.
+//     socket_filename starting with '@' will create an abstract socket
+//     in the given namespace
+//
 // MemifSocketFilenameAddDelV2 defines message 'memif_socket_filename_add_del_v2'.
 type MemifSocketFilenameAddDelV2 struct {
 	IsAdd          bool   `binapi:"bool,name=is_add" json:"is_add,omitempty"`
@@ -594,6 +668,10 @@ func (m *MemifSocketFilenameAddDelV2) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Create memory interface socket file response
+//   - retval - return value for request
+//   - socket_id - non-0 32-bit integer used to identify a socket file
+//
 // MemifSocketFilenameAddDelV2Reply defines message 'memif_socket_filename_add_del_v2_reply'.
 type MemifSocketFilenameAddDelV2Reply struct {
 	Retval   int32  `binapi:"i32,name=retval" json:"retval,omitempty"`
@@ -633,6 +711,10 @@ func (m *MemifSocketFilenameAddDelV2Reply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Memory interface details structure
+//   - socket_id - u32 used to identify the given socket filename
+//   - socket_filename - corresponding NUL terminated socket filename
+//
 // MemifSocketFilenameDetails defines message 'memif_socket_filename_details'.
 type MemifSocketFilenameDetails struct {
 	SocketID       uint32 `binapi:"u32,name=socket_id" json:"socket_id,omitempty"`
@@ -670,6 +752,7 @@ func (m *MemifSocketFilenameDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump the table of socket ids and corresponding filenames
 // MemifSocketFilenameDump defines message 'memif_socket_filename_dump'.
 type MemifSocketFilenameDump struct{}
 

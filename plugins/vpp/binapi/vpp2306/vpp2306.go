@@ -55,6 +55,7 @@ import (
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2306/vxlan"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2306/vxlan_gpe"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2306/wireguard"
+	"go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2306/policer"
 )
 
 // Version is used to identify VPP binapi version
@@ -86,6 +87,7 @@ func init() {
 			vpe.AllMessages,
 			vxlan.AllMessages,
 			vxlan_gpe.AllMessages,
+			policer.AllMessages,
 		),
 		Plugins: vpp.Messages(
 			abf.AllMessages,
@@ -108,5 +110,4 @@ func init() {
 }
 
 //go:generate -command binapigen binapi-generator --no-version-info --output-dir=.
-//go:generate binapigen --input=$VPP_API_DIR/core
-//go:generate binapigen --input=$VPP_API_DIR/plugins
+//go:generate binapigen --input=$VPP_API_DIR

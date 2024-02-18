@@ -25,6 +25,16 @@ const (
 	VersionCrc = 0x1462473
 )
 
+// Create or delete a GTPU tunnel
+//   - is_add - add address if non-zero, else delete
+//   - src_address - GTPU tunnel's source address.
+//   - dst_address - GTPU tunnel's destination address.
+//   - mcast_sw_if_index - version, O-bit and C-bit (see nsh_packet.h)
+//   - encap_vrf_id - fib identifier used for outgoing encapsulated packets
+//   - decap_next_index - the index of the next node if success
+//   - teid - Local (rx) Tunnel Endpoint Identifier
+//   - tteid - Remote (tx) Tunnel Endpoint Identifier
+//
 // GtpuAddDelTunnel defines message 'gtpu_add_del_tunnel'.
 type GtpuAddDelTunnel struct {
 	IsAdd          bool                           `binapi:"bool,name=is_add" json:"is_add,omitempty"`
@@ -92,6 +102,10 @@ func (m *GtpuAddDelTunnel) Unmarshal(b []byte) error {
 	return nil
 }
 
+// reply for set or delete an GTPU tunnel
+//   - retval - return code
+//   - sw_if_index - software index of the interface
+//
 // GtpuAddDelTunnelReply defines message 'gtpu_add_del_tunnel_reply'.
 type GtpuAddDelTunnelReply struct {
 	Retval    int32                          `binapi:"i32,name=retval" json:"retval,omitempty"`
@@ -129,6 +143,11 @@ func (m *GtpuAddDelTunnelReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Offload gtpu rx request
+//   - hw_if_index - rx hw interface
+//   - sw_if_index - gtpu interface to offload
+//   - enable - if non-zero enable, else disable
+//
 // GtpuOffloadRx defines message 'gtpu_offload_rx'.
 type GtpuOffloadRx struct {
 	HwIfIndex uint32 `binapi:"u32,name=hw_if_index" json:"hw_if_index,omitempty"`
@@ -203,6 +222,16 @@ func (m *GtpuOffloadRxReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// dump details of an GTPU tunnel
+//   - sw_if_index - software index of the interface
+//   - src_address - GTPU tunnel's source address.
+//   - dst_address - GTPU tunnel's destination address.
+//   - mcast_sw_if_index - version, O-bit and C-bit (see nsh_packet.h)
+//   - encap_vrf_id - fib identifier used for outgoing encapsulated packets
+//   - decap_next_index - the index of the next node if success
+//   - teid - Local (rx) Tunnel Endpoint Identifier
+//   - tteid - Remote (tx) Tunnel Endpoint Identifier
+//
 // GtpuTunnelDetails defines message 'gtpu_tunnel_details'.
 type GtpuTunnelDetails struct {
 	SwIfIndex      interface_types.InterfaceIndex `binapi:"interface_index,name=sw_if_index" json:"sw_if_index,omitempty"`
@@ -270,6 +299,9 @@ func (m *GtpuTunnelDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump GTPU tunnel
+//   - sw_if_index - software index of the interface
+//
 // GtpuTunnelDump defines message 'gtpu_tunnel_dump'.
 type GtpuTunnelDump struct {
 	SwIfIndex interface_types.InterfaceIndex `binapi:"interface_index,name=sw_if_index" json:"sw_if_index,omitempty"`
@@ -303,6 +335,12 @@ func (m *GtpuTunnelDump) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Update GTPU tunnel TX TEID
+//   - dst_address - GTPU tunnel's destination address.
+//   - encap_vrf_id - fib identifier used for outgoing encapsulated packets
+//   - teid - Local (rx) Tunnel Endpoint Identifier
+//   - tteid - remote (tx) Tunnel Endpoint Identifier
+//
 // GtpuTunnelUpdateTteid defines message 'gtpu_tunnel_update_tteid'.
 type GtpuTunnelUpdateTteid struct {
 	DstAddress ip_types.Address `binapi:"address,name=dst_address" json:"dst_address,omitempty"`
@@ -384,6 +422,11 @@ func (m *GtpuTunnelUpdateTteidReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Interface set gtpu-bypass request
+//   - sw_if_index - interface used to reach neighbor
+//   - is_ipv6 - if non-zero, enable ipv6-gtpu-bypass, else ipv4-gtpu-bypass
+//   - enable - if non-zero enable, else disable
+//
 // SwInterfaceSetGtpuBypass defines message 'sw_interface_set_gtpu_bypass'.
 type SwInterfaceSetGtpuBypass struct {
 	SwIfIndex interface_types.InterfaceIndex `binapi:"interface_index,name=sw_if_index" json:"sw_if_index,omitempty"`

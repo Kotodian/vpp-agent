@@ -185,6 +185,7 @@ func (x FlowprobeWhichFlags) String() string {
 	return s
 }
 
+// Get IPFIX flow record generation parameters
 // FlowprobeGetParams defines message 'flowprobe_get_params'.
 // InProgress: the message form may change in the future versions
 type FlowprobeGetParams struct{}
@@ -213,6 +214,14 @@ func (m *FlowprobeGetParams) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Reply to get IPFIX flow record generation parameters
+//   - retval - error (0 is "no error")
+//   - record_flags - flags indicating what data to record
+//   - active_timer - time in seconds after which active flow records are
+//     to be exported (0 is "off")
+//   - passive_timer - time in seconds after which passive flow records are
+//     to be deleted (0 is "off")
+//
 // FlowprobeGetParamsReply defines message 'flowprobe_get_params_reply'.
 // InProgress: the message form may change in the future versions
 type FlowprobeGetParamsReply struct {
@@ -259,6 +268,12 @@ func (m *FlowprobeGetParamsReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Enable or disable IPFIX flow record generation on an interface
+//   - is_add - add interface if non-zero, else delete
+//   - which - datapath on which to record flows
+//   - direction - direction of recorded flows
+//   - sw_if_index - index of the interface
+//
 // FlowprobeInterfaceAddDel defines message 'flowprobe_interface_add_del'.
 // InProgress: the message form may change in the future versions
 type FlowprobeInterfaceAddDel struct {
@@ -341,6 +356,11 @@ func (m *FlowprobeInterfaceAddDelReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Details about IPFIX flow record generation enabled on interface
+//   - which - datapath on which to record flows
+//   - direction - direction of recorded flows
+//   - sw_if_index - index of the interface
+//
 // FlowprobeInterfaceDetails defines message 'flowprobe_interface_details'.
 // InProgress: the message form may change in the future versions
 type FlowprobeInterfaceDetails struct {
@@ -383,6 +403,9 @@ func (m *FlowprobeInterfaceDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump interfaces for which IPFIX flow record generation is enabled
+//   - sw_if_index - interface index to use as filter (0xffffffff is "all")
+//
 // FlowprobeInterfaceDump defines message 'flowprobe_interface_dump'.
 // InProgress: the message form may change in the future versions
 type FlowprobeInterfaceDump struct {
@@ -491,6 +514,13 @@ func (m *FlowprobeParamsReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Set IPFIX flow record generation parameters
+//   - record_flags - flags indicating what data to record
+//   - active_timer - time in seconds after which active flow records are
+//     to be exported (0 is "off", 0xffffffff is "use default value")
+//   - passive_timer - time in seconds after which passive flow records are
+//     to be deleted (0 is "off", 0xffffffff is "use default value")
+//
 // FlowprobeSetParams defines message 'flowprobe_set_params'.
 // InProgress: the message form may change in the future versions
 type FlowprobeSetParams struct {
@@ -567,6 +597,11 @@ func (m *FlowprobeSetParamsReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Enable / disable per-packet IPFIX recording on an interface
+//   - is_add - add address if non-zero, else delete
+//   - which - flags indicating forwarding path
+//   - sw_if_index - index of the interface
+//
 // FlowprobeTxInterfaceAddDel defines message 'flowprobe_tx_interface_add_del'.
 type FlowprobeTxInterfaceAddDel struct {
 	IsAdd     bool                           `binapi:"bool,name=is_add" json:"is_add,omitempty"`

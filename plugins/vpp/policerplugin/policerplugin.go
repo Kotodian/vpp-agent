@@ -16,6 +16,8 @@ import (
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/descriptor/adapter"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/policeridx"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/vppcalls"
+
+	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/vppcalls/vpp2306"
 	_ "go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/vppcalls/vpp2310"
 )
 

@@ -73,6 +73,10 @@ type GreTunnel struct {
 	Dst          ip_types.Address                   `binapi:"address,name=dst" json:"dst,omitempty"`
 }
 
+// Add or delete a single GRE tunnel.
+//   - is_add - add if true, delete if false.
+//   - tunnel - tunnel definition to add or delete.
+//
 // GreTunnelAddDel defines message 'gre_tunnel_add_del'.
 type GreTunnelAddDel struct {
 	IsAdd  bool      `binapi:"bool,name=is_add" json:"is_add,omitempty"`
@@ -140,6 +144,10 @@ func (m *GreTunnelAddDel) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Add or delete a single GRE tunnel.
+//   - retval - return code for the request.
+//   - sw_if_index - the interface corresponding to the affected tunnel.
+//
 // GreTunnelAddDelReply defines message 'gre_tunnel_add_del_reply'.
 type GreTunnelAddDelReply struct {
 	Retval    int32                          `binapi:"i32,name=retval" json:"retval,omitempty"`
@@ -177,6 +185,9 @@ func (m *GreTunnelAddDelReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Details response for one of the requested GRE tunnels.
+//   - tunnel - definition of the dumped tunnel.
+//
 // GreTunnelDetails defines message 'gre_tunnel_details'.
 type GreTunnelDetails struct {
 	Tunnel GreTunnel `binapi:"gre_tunnel,name=tunnel" json:"tunnel,omitempty"`
@@ -240,6 +251,9 @@ func (m *GreTunnelDetails) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Dump details of all or just a single GRE tunnel.
+//   - sw_if_index - filter for tunnel of this interface index, ~0 for all.
+//
 // GreTunnelDump defines message 'gre_tunnel_dump'.
 type GreTunnelDump struct {
 	SwIfIndex interface_types.InterfaceIndex `binapi:"interface_index,name=sw_if_index" json:"sw_if_index,omitempty"`

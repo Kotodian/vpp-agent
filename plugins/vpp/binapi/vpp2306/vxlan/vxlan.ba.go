@@ -25,6 +25,11 @@ const (
 	VersionCrc = 0x95381587
 )
 
+// Interface set vxlan-bypass request
+//   - sw_if_index - interface used to reach neighbor
+//   - is_ipv6 - if non-zero, enable ipv6-vxlan-bypass, else ipv4-vxlan-bypass
+//   - enable - if non-zero enable, else disable
+//
 // SwInterfaceSetVxlanBypass defines message 'sw_interface_set_vxlan_bypass'.
 type SwInterfaceSetVxlanBypass struct {
 	SwIfIndex interface_types.InterfaceIndex `binapi:"interface_index,name=sw_if_index" json:"sw_if_index,omitempty"`
@@ -101,6 +106,16 @@ func (m *SwInterfaceSetVxlanBypassReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Create or delete a VXLAN tunnel
+//   - is_add - Use 1 to create the tunnel, 0 to remove it
+//   - instance - optional unique custom device instance, else ~0.
+//   - src_address - Source IP address
+//   - dst_address - Destination IP address, can be multicast
+//   - mcast_sw_if_index - Interface for multicast destination
+//   - encap_vrf_id - Encap route table FIB index
+//   - decap_next_index - index of decap next graph node
+//   - vni - The VXLAN Network Identifier, uint24
+//
 // VxlanAddDelTunnel defines message 'vxlan_add_del_tunnel'.
 type VxlanAddDelTunnel struct {
 	IsAdd          bool                           `binapi:"bool,name=is_add,default=true" json:"is_add,omitempty"`
@@ -205,6 +220,18 @@ func (m *VxlanAddDelTunnelReply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Create or delete a VXLAN tunnel
+//   - is_add - Use 1 to create the tunnel, 0 to remove it
+//   - instance - optional unique custom device instance, else ~0.
+//   - src_address - Source IP address
+//   - dst_address - Destination IP address, can be multicast
+//   - src_port - Source UDP port. It is not included in sent packets. Used only for port registration
+//   - dst_port - Destination UDP port
+//   - mcast_sw_if_index - Interface for multicast destination
+//   - encap_vrf_id - Encap route table FIB index
+//   - decap_next_index - index of decap next graph node
+//   - vni - The VXLAN Network Identifier, uint24
+//
 // VxlanAddDelTunnelV2 defines message 'vxlan_add_del_tunnel_v2'.
 type VxlanAddDelTunnelV2 struct {
 	IsAdd          bool                           `binapi:"bool,name=is_add,default=true" json:"is_add,omitempty"`
@@ -317,6 +344,19 @@ func (m *VxlanAddDelTunnelV2Reply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Create or delete a VXLAN tunnel
+//   - is_add - Use 1 to create the tunnel, 0 to remove it
+//   - instance - optional unique custom device instance, else ~0.
+//   - src_address - Source IP address
+//   - dst_address - Destination IP address, can be multicast
+//   - src_port - Source UDP port. It is not included in sent packets. Used only for port registration
+//   - dst_port - Destination UDP port
+//   - mcast_sw_if_index - Interface for multicast destination
+//   - encap_vrf_id - Encap route table FIB index
+//   - decap_next_index - index of decap next graph node
+//   - vni - The VXLAN Network Identifier, uint24
+//   - is_l3 - if true, create the interface in L3 mode, w/o MAC
+//
 // VxlanAddDelTunnelV3 defines message 'vxlan_add_del_tunnel_v3'.
 type VxlanAddDelTunnelV3 struct {
 	IsAdd          bool                           `binapi:"bool,name=is_add,default=true" json:"is_add,omitempty"`
@@ -433,6 +473,11 @@ func (m *VxlanAddDelTunnelV3Reply) Unmarshal(b []byte) error {
 	return nil
 }
 
+// Offload vxlan rx request
+//   - hw_if_index - rx hw interface
+//   - sw_if_index - vxlan interface to offload
+//   - enable - if non-zero enable, else disable
+//
 // VxlanOffloadRx defines message 'vxlan_offload_rx'.
 type VxlanOffloadRx struct {
 	HwIfIndex interface_types.InterfaceIndex `binapi:"interface_index,name=hw_if_index" json:"hw_if_index,omitempty"`
