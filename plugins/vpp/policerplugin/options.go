@@ -1,6 +1,7 @@
 package policerplugin
 
 import (
+	"go.ligato.io/cn-infra/v2/health/statuscheck"
 	"go.ligato.io/cn-infra/v2/logging"
 	"go.ligato.io/vpp-agent/v3/plugins/govppmux"
 	"go.ligato.io/vpp-agent/v3/plugins/kvscheduler"
@@ -18,6 +19,7 @@ func NewPlugin(opts ...Option) *PolicerPlugin {
 	p.KVScheduler = &kvscheduler.DefaultPlugin
 	p.VPP = &govppmux.DefaultPlugin
 	p.IfPlugin = &ifplugin.DefaultPlugin
+	p.StatusCheck = &statuscheck.DefaultPlugin
 
 	for _, o := range opts {
 		o(p)

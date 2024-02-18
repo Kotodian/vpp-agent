@@ -6,6 +6,7 @@ package policerplugin
 import (
 	"errors"
 
+	"go.ligato.io/cn-infra/v2/health/statuscheck"
 	"go.ligato.io/cn-infra/v2/infra"
 	"go.ligato.io/vpp-agent/v3/plugins/govppmux"
 	kvs "go.ligato.io/vpp-agent/v3/plugins/kvscheduler/api"
@@ -37,6 +38,7 @@ type Deps struct {
 	KVScheduler kvs.KVScheduler
 	VPP         govppmux.API
 	IfPlugin    ifplugin.API
+	StatusCheck statuscheck.PluginStatusWriter // optional
 }
 
 func (p *PolicerPlugin) Init() (err error) {
@@ -75,5 +77,8 @@ func (p *PolicerPlugin) GetPolicerIndex() policeridx.PolicerMetadataIndex {
 
 // AfterInit
 func (p *PolicerPlugin) AfterInit() error {
+	if p.StatusCheck != nil {
+		p.StatusCheck.Register(p.PluginName, nil)
+	}
 	return nil
 }
