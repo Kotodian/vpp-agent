@@ -4,6 +4,7 @@ import (
 	"go.ligato.io/cn-infra/v2/logging"
 	"go.ligato.io/vpp-agent/v3/plugins/govppmux"
 	"go.ligato.io/vpp-agent/v3/plugins/kvscheduler"
+	"go.ligato.io/vpp-agent/v3/plugins/vpp/ifplugin"
 )
 
 // Option is a function that can be used in NewPlugin to customize Plugin.
@@ -16,6 +17,7 @@ func NewPlugin(opts ...Option) *PolicerPlugin {
 	p.PluginName = "vpp-policer-plugin"
 	p.KVScheduler = &kvscheduler.DefaultPlugin
 	p.VPP = &govppmux.DefaultPlugin
+	p.IfPlugin = &ifplugin.DefaultPlugin
 
 	for _, o := range opts {
 		o(p)

@@ -37,9 +37,11 @@ func NewPolicerDescriptor(policerHandler vppcalls.PolicerVppAPI, log logging.Plu
 // the KVScheduler.
 func (d *PolicerDescriptor) GetDescriptor() *adapter.PolicerDescriptor {
 	return &adapter.PolicerDescriptor{
-		Name:            PolicerDescriptorName,
-		NBKeyPrefix:     policer.ModelPolicerConfig.KeyPrefix(),
-		ValueTypeName:   policer.ModelPolicerConfig.ProtoName(),
+		Name:          PolicerDescriptorName,
+		NBKeyPrefix:   policer.ModelPolicerConfig.KeyPrefix(),
+		ValueTypeName: policer.ModelPolicerConfig.ProtoName(),
+		// KeyLabel as metadata map key
+		KeyLabel:        policer.ModelPolicerConfig.StripKeyPrefix,
 		KeySelector:     policer.ModelPolicerConfig.IsKeyValid,
 		ValueComparator: d.EquivalentPolicers,
 		Validate:        d.Validate,
@@ -123,15 +125,15 @@ func (d *PolicerDescriptor) Delete(key string, policer *policer.PolicerConfig, m
 
 // Retrieve returns all wg peers.
 func (d *PolicerDescriptor) Retrieve(correlate []adapter.PolicerKVWithMetadata) (dump []adapter.PolicerKVWithMetadata, err error) {
-	peers, err := d.policerHandler.DumpPolicers()
+	policers, err := d.policerHandler.DumpPolicers()
 	if err != nil {
 		d.log.Error(err)
 		return dump, err
 	}
-	for _, peer := range peers {
+	for _, policer := range policers {
 		dump = append(dump, adapter.PolicerKVWithMetadata{
-			Key:    models.Key(peer),
-			Value:  peer,
+			Key:    models.Key(policer),
+			Value:  policer,
 			Origin: kvs.FromNB,
 		})
 	}

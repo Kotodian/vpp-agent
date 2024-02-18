@@ -179,8 +179,8 @@ func (h *PolicerVppHandler) PolicerInput(policerIndex uint32, iface *policer.Pol
 		PolicerIndex: policerIndex,
 		Apply:        apply,
 	}
-	// prepare reply
-	reply := &vpp_policer.PolicerInputV2Reply{}
+	// prepare reply, do not use PolicerInputV2Reply, the reason i think is vpp's api bug
+	reply := &vpp_policer.PolicerInputReply{}
 	// send request and obtain reply
 	if err := h.callsChannel.SendRequest(request).ReceiveReply(reply); err != nil {
 		return err
@@ -198,8 +198,8 @@ func (h *PolicerVppHandler) PolicerOutput(policerIndex uint32, iface *policer.Po
 		PolicerIndex: policerIndex,
 		Apply:        apply,
 	}
-	// prepare reply
-	reply := &vpp_policer.PolicerOutputV2Reply{}
+	// prepare reply, do not use PolicerOutputV2Reply, the reason i think is vpp's api bug
+	reply := &vpp_policer.PolicerOutputReply{}
 	// send request and obtain reply
 	if err := h.callsChannel.SendRequest(request).ReceiveReply(reply); err != nil {
 		return err
