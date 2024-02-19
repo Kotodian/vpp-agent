@@ -178,7 +178,7 @@ func (p *Plugin) initHandlers() (err error) {
 		p.Log.Info("VPP Wg handler is not available, it will be skipped")
 	}
 	p.configurator.policerHandler = policervppcalls.CompatiblePolicerVppHandler(p.VPP, ifIndexes, p.Log)
-	if p.configurator.wireguardHandler == nil {
+	if p.configurator.policerHandler == nil {
 		p.Log.Info("VPP Policer handler is not available, it will be skipped")
 	}
 
