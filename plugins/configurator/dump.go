@@ -506,7 +506,9 @@ func (svc *dumpService) DumpPolicers() (policers []*vpp_policer.PolicerConfig, e
 	if err != nil {
 		return nil, err
 	}
-	policers = append(policers, _policers...)
+	for _, _policer := range _policers {
+		policers = append(policers, _policer.Config)
+	}
 	return
 }
 

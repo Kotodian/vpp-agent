@@ -2,11 +2,13 @@ package vpp2310
 
 import (
 	vpp_policer "go.ligato.io/vpp-agent/v3/plugins/vpp/binapi/vpp2310/policer"
+	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/policeridx"
+	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/vppcalls"
 	policer "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer"
 )
 
 // DumpPolicers implements policer handler.
-func (h *PolicerVppHandler) DumpPolicers() (policerList []*policer.PolicerConfig, err error) {
+func (h *PolicerVppHandler) DumpPolicers() (policerList []*vppcalls.PolicerDetails, err error) {
 	// index of ^uint32(0) dumps all peers
 	req := &vpp_policer.PolicerDumpV2{PolicerIndex: ^uint32(0)}
 	requestCtx := h.callsChannel.SendMultiRequest(req)
@@ -24,8 +26,11 @@ func (h *PolicerVppHandler) DumpPolicers() (policerList []*policer.PolicerConfig
 		vppPolicerList = append(vppPolicerList, vppPolicerDetails)
 	}
 
-	for _, vppPolicerDetails := range vppPolicerList {
-		policerDetails := &policer.PolicerConfig{
+	for i, vppPolicerDetails := range vppPolicerList {
+		mdata := &policeridx.PolicerMetadata{
+			Index: uint32(i),
+		}
+		cfg := &policer.PolicerConfig{
 			Name:       vppPolicerDetails.Name,
 			Cir:        vppPolicerDetails.Cir,
 			Eir:        vppPolicerDetails.Eir,
@@ -48,8 +53,11 @@ func (h *PolicerVppHandler) DumpPolicers() (policerList []*policer.PolicerConfig
 				Dscp: uint32(vppPolicerDetails.ViolateAction.Dscp),
 			},
 		}
-
-		policerList = append(policerList, policerDetails)
+		detail := &vppcalls.PolicerDetails{
+			Metadata: mdata,
+			Config:   cfg,
+		}
+		policerList = append(policerList, detail)
 	}
 
 	return

@@ -132,9 +132,10 @@ func (d *PolicerDescriptor) Retrieve(correlate []adapter.PolicerKVWithMetadata) 
 	}
 	for _, policer := range policers {
 		dump = append(dump, adapter.PolicerKVWithMetadata{
-			Key:    models.Key(policer),
-			Value:  policer,
-			Origin: kvs.FromNB,
+			Metadata: policer.Metadata,
+			Key:      models.Key(policer.Config),
+			Value:    policer.Config,
+			Origin:   kvs.FromNB,
 		})
 	}
 

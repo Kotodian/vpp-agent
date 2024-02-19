@@ -5,6 +5,7 @@ import (
 	"go.ligato.io/cn-infra/v2/logging"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp"
 	"go.ligato.io/vpp-agent/v3/plugins/vpp/ifplugin/ifaceidx"
+	"go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/policeridx"
 	policer "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer"
 )
 
@@ -25,9 +26,15 @@ type PolicerVppAPI interface {
 	PolicerOutput(policerIndex uint32, iface *policer.PolicerConfig_Interface, apply bool) error
 }
 
+type PolicerDetails struct {
+	Metadata *policeridx.PolicerMetadata
+	Config   *policer.PolicerConfig
+	//TODO: Runtime
+}
+
 // PolicerVPPRead provides read methods for policer
 type PolicerVppRead interface {
-	DumpPolicers() (policerList []*policer.PolicerConfig, err error)
+	DumpPolicers() (policerList []*PolicerDetails, err error)
 }
 
 var Handler = vpp.RegisterHandler(vpp.HandlerDesc{
