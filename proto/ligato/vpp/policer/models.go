@@ -1,6 +1,7 @@
 package vpp_policer
 
 import (
+	"strconv"
 	"strings"
 
 	"go.ligato.io/vpp-agent/v3/pkg/models"
@@ -30,26 +31,30 @@ func PolicerConfigKey(name string) string {
 	})
 }
 
-/* Policer interface (derived) */
-
 const (
 	// interfacePolicerKeyPrefix is a common prefix for (derived) keys each representing
 	// policer configuration for a single interface.
-	interfacePolicerKeyPrefix = "vpp/policer/"
+	policerKeyPrefix = "vpp/policer/"
 
 	// interfacePolicerKeyTemplate is a template for (derived) key representing
 	// Policer configuration for a single interface.
-	interfacePolicerKeyTemplate = interfacePolicerKeyPrefix + "{name}/interface/{iface}/feature/{feature}"
+	interfacePolicerKeyTemplate = policerKeyPrefix + "{name}/interface/{iface}/feature/{feature}"
 
 	// Policer interface features
 	inputFeature  = "input"
 	outputFeature = "output"
+
+	// workerPolicerKeyTemplate is a template for (derived) key representing
+	// Policer configuration for a worker thread.
+	workerPolicerKeyTemplate = policerKeyPrefix + "{name}/worker/{worker}"
 )
 
 const (
 	// InvalidKeyPart is used in key for parts which are invalid
 	InvalidKeyPart = "<invalid>"
 )
+
+/* Policer interface (derived) */
 
 // DerivedPolicerInterfaceKey returns (derived) key representing Policer configuration
 // for a given interface.
@@ -70,7 +75,7 @@ func DerivedPolicerInterfaceKey(policerName, iface string, isOutput bool) string
 // ParseDerivedInterfacePolicerKey parses interface name and the assigned Policer feature
 // from Interface-Policer key.
 func ParseDerivedPolicerInterfaceKey(key string) (policerName, iface string, isOutput bool, isInterfacePolicerKey bool) {
-	trim := strings.TrimPrefix(key, interfacePolicerKeyPrefix)
+	trim := strings.TrimPrefix(key, policerKeyPrefix)
 	if trim != key && trim != "" {
 		fibComps := strings.Split(trim, "/")
 		if len(fibComps) >= 5 && fibComps[1] == "interface" && fibComps[len(fibComps)-2] == "feature" {
@@ -87,4 +92,41 @@ func ParseDerivedPolicerInterfaceKey(key string) (policerName, iface string, isO
 		}
 	}
 	return "", "", false, false
+}
+
+/* Policer worker (derived) */
+
+// DerivedPolicerWorkerKey returns (derived) key representing Policer configuration
+// for a given worker thread.
+func DerivedPolicerWorkerKey(policerName string, workerIndex uint32) string {
+	key := strings.Replace(workerPolicerKeyTemplate, "{name}", policerName, 1)
+	if workerIndex == ^uint32(0) {
+		key = strings.Replace(key, "{worker}", InvalidKeyPart, 1)
+	} else {
+		key = strings.Replace(key, "{worker}", strconv.Itoa(int(workerIndex)), 1)
+	}
+	return key
+}
+
+// ParseDerivedPolicerWorkerKey parses policer name and the assigned Policer worker
+func ParseDerivedPolicerWorkerKey(key string) (policerName string, workerIndex uint32, isPolicerWorkerKey bool) {
+	workerIndex = ^uint32(0)
+	trim := strings.TrimPrefix(key, policerKeyPrefix)
+	if trim != key && trim != "" {
+		fibComps := strings.Split(trim, "/")
+		if len(fibComps) >= 3 && fibComps[1] == "worker" {
+			policerName = fibComps[0]
+			if fibComps[2] == InvalidKeyPart {
+				return
+			}
+			_workerIndex, err := strconv.ParseUint(fibComps[2], 10, 32)
+			if err != nil {
+				return
+			}
+			workerIndex = uint32(_workerIndex)
+			isPolicerWorkerKey = true
+			return
+		}
+	}
+	return
 }

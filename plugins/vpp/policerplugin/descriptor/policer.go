@@ -68,12 +68,21 @@ func (d *PolicerDescriptor) Validate(key string, policer *policer.PolicerConfig)
 }
 
 // DerivedValues derives policer.PolicerConfig_Interface for every interface assigned to the Policer.
+// policer.PolicerConfig_Worker for worker to the Policer.
 func (d *PolicerDescriptor) DerivedValues(key string, p *policer.PolicerConfig) (derValues []kvs.KeyValuePair) {
 	// Policer interfaces
 	for _, policerIface := range p.Interfaces {
 		derValues = append(derValues, kvs.KeyValuePair{
 			Key:   policer.DerivedPolicerInterfaceKey(p.Name, policerIface.Name, policerIface.IsOutput),
 			Value: policerIface,
+		})
+	}
+
+	// Policer worker
+	if p.Worker != nil {
+		derValues = append(derValues, kvs.KeyValuePair{
+			Key:   policer.DerivedPolicerWorkerKey(p.Name, p.Worker.Index),
+			Value: p.Worker,
 		})
 	}
 

@@ -1,5 +1,6 @@
 //go:generate descriptor-adapter --descriptor-name Policer --value-type *vpp_policer.PolicerConfig --meta-type *policeridx.PolicerMetadata --import "go.ligato.io/vpp-agent/v3/plugins/vpp/policerplugin/policeridx" --import "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer" --output-dir "descriptor"
 //go:generate descriptor-adapter --descriptor-name PolicerInterface --value-type *vpp_policer.PolicerConfig_Interface --import "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer" --output-dir "descriptor"
+//go:generate descriptor-adapter --descriptor-name PolicerWorker --value-type *vpp_policer.PolicerConfig_Worker --import "go.ligato.io/vpp-agent/v3/proto/ligato/vpp/policer" --output-dir "descriptor"
 
 package policerplugin
 
@@ -28,8 +29,9 @@ type PolicerPlugin struct {
 	// handler
 	PolicerHandler vppcalls.PolicerVppAPI
 
-	policerDescriptor   *descriptor.PolicerDescriptor
-	policerIfDescriptor *descriptor.PolicerInterfaceDescriptor
+	policerDescriptor       *descriptor.PolicerDescriptor
+	policerIfDescriptor     *descriptor.PolicerInterfaceDescriptor
+	policerWorkerDescriptor *descriptor.PolicerWorkerDescriptor
 
 	// runime
 	policerIndex policeridx.PolicerMetadataIndex
@@ -64,9 +66,17 @@ func (p *PolicerPlugin) Init() (err error) {
 	if !withIndex {
 		return errors.New("missing index with policer metadata")
 	}
+
 	p.policerIfDescriptor = descriptor.NewPolicerInterfaceDescriptor(p.GetPolicerIndex(), p.PolicerHandler, p.Log)
 	policerIfDescriptor := adapter.NewPolicerInterfaceDescriptor(p.policerIfDescriptor.GetDescriptor())
 	err = p.KVScheduler.RegisterKVDescriptor(policerIfDescriptor)
+	if err != nil {
+		return err
+	}
+
+	p.policerWorkerDescriptor = descriptor.NewPolicerWorkerDescriptor(p.GetPolicerIndex(), p.PolicerHandler, p.Log)
+	policerWorkerDescriptor := adapter.NewPolicerWorkerDescriptor(p.policerWorkerDescriptor.GetDescriptor())
+	err = p.KVScheduler.RegisterKVDescriptor(policerWorkerDescriptor)
 	if err != nil {
 		return err
 	}

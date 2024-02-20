@@ -24,6 +24,8 @@ type PolicerVppAPI interface {
 	PolicerInput(policerIndex uint32, iface *policer.PolicerConfig_Interface, apply bool) error
 	// Enable or disable policer-output feature via binary API
 	PolicerOutput(policerIndex uint32, iface *policer.PolicerConfig_Interface, apply bool) error
+	// Bind policer to worker
+	PolicerBind(policerIndex uint32, worker *policer.PolicerConfig_Worker, enable bool) error
 }
 
 type PolicerDetails struct {

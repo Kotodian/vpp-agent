@@ -50,7 +50,7 @@ func TestPolicerInterfaceKey(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			key := policer.DerivedPolicerInterfaceKey(test.policerName, test.ifName, test.isOutput)
 			if key != test.expectedKey {
-				t.Errorf("failed for: policerName=%s idName=%s\n"+
+				t.Errorf("failed for: policerName=%s ifName=%s\n"+
 					"expected key:\n\t%q\ngot key:\n\t%q",
 					test.policerName, test.ifName, test.expectedKey, key)
 			}
@@ -122,6 +122,77 @@ func TestParsePolicerInterfaceKey(t *testing.T) {
 			}
 			if isOutput != test.expectedIsOutput {
 				t.Errorf("expected isOutput: %v\tgot: %v", test.expectedIsOutput, isOutput)
+			}
+		})
+	}
+}
+
+func TestPolicerWorkerKey(t *testing.T) {
+	tests := []struct {
+		name        string
+		policerName string
+		workerIndex uint32
+		expectedKey string
+	}{
+		{
+			name:        "valid policer name & worker index",
+			policerName: "policer1",
+			workerIndex: 1,
+			expectedKey: "vpp/policer/policer1/worker/1",
+		},
+		{
+			name:        "invalid worker",
+			policerName: "policer1",
+			workerIndex: ^uint32(0),
+			expectedKey: "vpp/policer/policer1/worker/<invalid>",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			key := policer.DerivedPolicerWorkerKey(test.policerName, test.workerIndex)
+			if key != test.expectedKey {
+				t.Errorf("failed for: policerName=%s workerIndex=%d\n"+
+					"expected key:\n\t%q\ngot key:\n\t%q",
+					test.policerName, test.workerIndex, test.expectedKey, key)
+			}
+		})
+	}
+}
+
+func TestParsePolicerWorkerKey(t *testing.T) {
+	tests := []struct {
+		name                       string
+		key                        string
+		expectedPolicerName        string
+		expectedWorkerIndex        uint32
+		expectedIsPolicerWorkerKey bool
+	}{
+		{
+			name:                       "valid Policer & worker index",
+			key:                        "vpp/policer/policer1/worker/1",
+			expectedPolicerName:        "policer1",
+			expectedWorkerIndex:        1,
+			expectedIsPolicerWorkerKey: true,
+		},
+		{
+			name:                       "valid Policer & invalid worker index",
+			key:                        "vpp/policer/policer1/worker/<invalid>",
+			expectedPolicerName:        "policer1",
+			expectedWorkerIndex:        ^uint32(0),
+			expectedIsPolicerWorkerKey: false,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			policerName, workerIndex, isPolicerWorkerKey := policer.ParseDerivedPolicerWorkerKey(test.key)
+			if isPolicerWorkerKey != test.expectedIsPolicerWorkerKey {
+				t.Errorf("expected isPolicerWorkerKey: %v\tgot: %v", test.expectedIsPolicerWorkerKey, isPolicerWorkerKey)
+			}
+			if policerName != test.expectedPolicerName {
+				t.Errorf("expected policerName: %s\tgot: %s", test.expectedPolicerName, policerName)
+			}
+			if workerIndex != test.expectedWorkerIndex {
+				t.Errorf("expected worker index: %d\tgot: %d", test.expectedWorkerIndex, workerIndex)
 			}
 		})
 	}

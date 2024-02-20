@@ -206,3 +206,18 @@ func (h *PolicerVppHandler) PolicerOutput(policerIndex uint32, iface *policer.Po
 	}
 	return nil
 }
+
+func (h *PolicerVppHandler) PolicerBind(policerIndex uint32, worker *policer.PolicerConfig_Worker, enable bool) error {
+	request := &vpp_policer.PolicerBindV2{
+		PolicerIndex: policerIndex,
+		WorkerIndex:  worker.Index,
+		BindEnable:   enable,
+	}
+	// prepare reply
+	reply := &vpp_policer.PolicerBindV2Reply{}
+	// send request and obtain reply
+	if err := h.callsChannel.SendRequest(request).ReceiveReply(reply); err != nil {
+		return err
+	}
+	return nil
+}

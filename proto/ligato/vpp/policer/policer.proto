@@ -64,5 +64,12 @@ message PolicerConfig {
     bool isOutput = 2;
   }
   repeated Interface interfaces = 13;
+
+  // Policer Worker
+  message Worker {
+    uint32 index = 1;
+  }
+  Worker worker = 14;
 }
+
 
